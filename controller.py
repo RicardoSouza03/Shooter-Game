@@ -88,6 +88,10 @@ class Controller():
         player = Player((self.screen_width, self.screen_heigth))
         player_group = pygame.sprite.Group()
         bullet_group = pygame.sprite.Group()
+        enemy_group = pygame.sprite.Group()
+        for _ in range(4):
+            enemy = Enemy((self.screen_width, self.screen_heigth))
+            enemy_group.add(enemy)
         player_group.add(player)
 
         while self.running:
@@ -98,8 +102,14 @@ class Controller():
                     bullet_group.add(player.create_bullet())
 
             self.screen.fill('black')
-            player_group.draw(self.screen)
+            if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
+            killed = pygame.sprite.groupcollide(enemy_group, bullet_group, True, True)
+            if killed:
+                print('yheaa')
             bullet_group.draw(self.screen)
+            player_group.draw(self.screen)
+            enemy_group.draw(self.screen)
+            enemy_group.update(player)
             bullet_group.update()
             pygame.display.flip()
             self.clock.tick(60)
