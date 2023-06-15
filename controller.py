@@ -43,13 +43,19 @@ class Enemy(pygame.sprite.Sprite):
         # Sets enemy position at a random position outside screen.
         random_x = random.randrange(screen_size[0])
         random_y = random.randrange(screen_size[1])
-        
-        if random_x > random_y:
+        random_z = random.randint(0, 1)
+
+        if random_x > random_y and random_z == 0:
             random_y = 0
-        elif random_x == random_y:
-            random_y = screen_size[1]
-        elif random_y > random_x:
+        elif random_y > random_x and random_z == 0:
             random_x = 0
+        elif random_x > random_y and random_z == 1:
+            random_y = screen_size[1]
+        elif random_y > random_x and random_z == 1:
+            random_x = screen_size[0]
+        else:
+            random_y = screen_size[1]
+        
         
         self.x = random_x
         self.y = random_y
@@ -57,7 +63,7 @@ class Enemy(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, screen, angle) -> None:
         super().__init__()
-        self.speed = 5
+        self.speed = 8
         self.angle = angle
         self.screen_w = screen[0]
         self.screen_h = screen[1]
