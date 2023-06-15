@@ -68,6 +68,7 @@ class Bullet(pygame.sprite.Sprite):
         self.screen_w = screen[0]
         self.screen_h = screen[1]
         self.original_image = pygame.Surface((20,20))
+        self.original_image.fill((225, 0, 0))
         self.image = self.original_image
         self.rect = self.original_image.get_rect(center = (pos_x, pos_y))
         self.set_rounded()
@@ -75,7 +76,7 @@ class Bullet(pygame.sprite.Sprite):
     def set_rounded(self):
         size = self.original_image.get_size()
         self.rect_image = pygame.Surface(size, pygame.SRCALPHA)
-        pygame.draw.rect(self.rect_image, (225, 0, 0), (0, 0, *size), border_radius=100)
+        pygame.draw.rect(self.rect_image, (225, 225, 225), (0, 0, *size), border_radius=100)
 
         self.image = self.original_image.copy().convert_alpha()
         self.image.blit(self.rect_image, (0, 0), None, pygame.BLEND_RGBA_MIN) 
@@ -101,9 +102,16 @@ class Controller():
         enemy = Enemy((self.screen_width, self.screen_heigth))
         enemy_group.add(enemy)
 
+    def change_cursor(self):
+        image = pygame.image.load('cross hair.png').convert_alpha()
+        self.cursor = pygame.transform.scale(image, (40, 40))
+
     def start(self):
         pygame.init()
         pygame.display.set_caption("Shooter game")
+        pygame.mouse.set_visible(False)
+        self.change_cursor()
+
         player = Player((self.screen_width, self.screen_heigth))
         player_group = pygame.sprite.Group()
         bullet_group = pygame.sprite.Group()
@@ -129,6 +137,7 @@ class Controller():
             bullet_group.draw(self.screen)
             player_group.draw(self.screen)
             enemy_group.draw(self.screen)
+            self.screen.blit(self.cursor, pygame.mouse.get_pos())
             enemy_group.update(player)
             bullet_group.update()
             pygame.display.flip()
