@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
 
     def create_bullet(self):
         mouse_pos = pygame.mouse.get_pos()
-        angle = get_angle_between((self.x+(self.rect.width/2), self.y+(self.rect.height/2)), mouse_pos)
+        angle = get_angle_between((self.x, self.y), mouse_pos)
         return Bullet(self.x, self.y, self.screen, angle)
 
 class Enemy(pygame.sprite.Sprite):
