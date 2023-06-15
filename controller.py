@@ -1,5 +1,11 @@
 import pygame, math
 
+def get_angle_between(point1, point2):
+    dx = point2[0] - point1[0]
+    dy = point2[1] - point1[1]
+    angle = math.atan2(dy, dx)
+    return angle
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, screen_size) -> None:
         super().__init__()
@@ -9,6 +15,11 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.Surface((60,60))
         self.image.fill((225, 225, 225))
         self.rect = self.image.get_rect(center = (self.x, self.y))
+
+    def create_bullet(self):
+        mouse_pos = pygame.mouse.get_pos()
+        angle = get_angle_between((self.x+(self.rect.width/2), self.y+(self.rect.height/2)), mouse_pos)
+        return Bullet(self.x, self.y, self.screen, angle)
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, screen, angle) -> None:
@@ -43,14 +54,20 @@ class Controller():
         pygame.display.set_caption("Shooter game")
         player = Player((self.screen_width, self.screen_heigth))
         player_group = pygame.sprite.Group()
+        bullet_group = pygame.sprite.Group()
         player_group.add(player)
 
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    bullet_group.add(player.create_bullet())
 
+            self.screen.fill('black')
             player_group.draw(self.screen)
+            bullet_group.draw(self.screen)
+            bullet_group.update()
             pygame.display.flip()
             self.clock.tick(60)
 
