@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.y = screen_size[1]/2
         self.screen = (screen_size[0], screen_size[1])
         self.image = pygame.Surface((60,60))
-        self.image.fill((225, 225, 225))
+        self.image.fill((0, 0, 0))
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
     def create_bullet(self):
@@ -28,7 +28,7 @@ class Enemy(pygame.sprite.Sprite):
         self.screen_size = screen_size
         self.speed = 1
         self.image = pygame.Surface((30,30))
-        self.image.fill((225, 225, 225))
+        self.image.fill((200, 200, 200))
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
     def update(self, player):
@@ -61,9 +61,18 @@ class Bullet(pygame.sprite.Sprite):
         self.angle = angle
         self.screen_w = screen[0]
         self.screen_h = screen[1]
-        self.image = pygame.Surface((20,20))
-        self.image.fill((225, 0, 0))
-        self.rect = self.image.get_rect(center = (pos_x, pos_y))
+        self.original_image = pygame.Surface((20,20))
+        self.image = self.original_image
+        self.rect = self.original_image.get_rect(center = (pos_x, pos_y))
+        self.set_rounded()
+
+    def set_rounded(self):
+        size = self.original_image.get_size()
+        self.rect_image = pygame.Surface(size, pygame.SRCALPHA)
+        pygame.draw.rect(self.rect_image, (225, 0, 0), (0, 0, *size), border_radius=100)
+
+        self.image = self.original_image.copy().convert_alpha()
+        self.image.blit(self.rect_image, (0, 0), None, pygame.BLEND_RGBA_MIN) 
 
     def update(self) -> None:
         self.rect.x += math.cos(self.angle) * self.speed
@@ -78,8 +87,8 @@ class Controller():
     def __init__(self) -> None:
         self.running = True
         self.clock = pygame.time.Clock()
-        self.screen_width = 800
-        self.screen_heigth = 500
+        self.screen_width = 600
+        self.screen_heigth = 800
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
 
     def create_enemy(self, enemy_group):
@@ -104,7 +113,7 @@ class Controller():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     bullet_group.add(player.create_bullet())
 
-            self.screen.fill('black')
+            self.screen.fill('white')
             if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
             
             killed = pygame.sprite.groupcollide(enemy_group, bullet_group, True, True)
