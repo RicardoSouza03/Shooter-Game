@@ -27,8 +27,8 @@ class Enemy(pygame.sprite.Sprite):
         self.spawn(screen_size)
         self.screen_size = screen_size
         self.speed = 1
-        self.image = pygame.Surface((30,30))
-        self.image.fill((200, 200, 200))
+        self.original_image = pygame.image.load('enemie.png').convert_alpha()
+        self.image = pygame.transform.scale(self.original_image, (40,40))
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
     def update(self, player):
@@ -66,19 +66,9 @@ class Bullet(pygame.sprite.Sprite):
         self.angle = angle
         self.screen_w = screen[0]
         self.screen_h = screen[1]
-        self.original_image = pygame.Surface((30,30))
-        self.original_image.fill((225, 0, 0))
-        self.image = self.original_image
+        self.original_image = pygame.image.load('Bullet.png')
+        self.image = pygame.transform.scale(self.original_image, (40,40))
         self.rect = self.image.get_rect(center = (pos_x, pos_y))
-        self.set_rounded()
-
-    def set_rounded(self):
-        size = self.original_image.get_size()
-        self.rect_image = pygame.Surface(size, pygame.SRCALPHA)
-        pygame.draw.rect(self.rect_image, (225, 225, 225), (0, 0, *size), border_radius=100)
-
-        self.image = self.original_image.copy().convert_alpha()
-        self.image.blit(self.rect_image, (0, 0), None, pygame.BLEND_RGBA_MIN) 
 
     def update(self):
         self.rect.x += math.cos(self.angle) * self.speed
@@ -109,7 +99,7 @@ class Controller():
         self.cursor = pygame.transform.scale(image, (40, 40))
 
     def display_score(self):
-        font = pygame.font.SysFont('Sans Serif', 60)
+        font = pygame.font.Font('Planes_ValMore.ttf', 60)
         text_surface = font.render(str(self.score), False, 'Black')
         self.screen.blit(text_surface, (self.screen_width/2-15, self.screen_heigth/2-200))
 
