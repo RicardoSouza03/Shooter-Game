@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
 
     def create_bullet(self):
         mouse_pos = pygame.mouse.get_pos()
-        angle = get_angle_between((self.x, self.y), mouse_pos)
+        angle = get_angle_between((self.x-20, self.y), mouse_pos)
         return Bullet(self.x, self.y, self.screen, angle)
 
 class Enemy(pygame.sprite.Sprite):
@@ -66,7 +66,7 @@ class Bullet(pygame.sprite.Sprite):
         self.angle = angle
         self.screen_w = screen[0]
         self.screen_h = screen[1]
-        self.original_image = pygame.Surface((20,20))
+        self.original_image = pygame.Surface((30,30))
         self.original_image.fill((225, 0, 0))
         self.image = self.original_image
         self.rect = self.image.get_rect(center = (pos_x, pos_y))
@@ -95,6 +95,7 @@ class Controller():
         self.clock = pygame.time.Clock()
         self.screen_width = 600
         self.screen_heigth = 800
+        self.score = 0
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
 
     def create_enemy(self, enemy_group):
@@ -104,6 +105,11 @@ class Controller():
     def change_cursor(self):
         image = pygame.image.load('cross hair.png').convert_alpha()
         self.cursor = pygame.transform.scale(image, (40, 40))
+
+    def display_score(self):
+        font = pygame.font.SysFont('Sans Serif', 60)
+        text_surface = font.render(str(self.score), False, 'Black')
+        self.screen.blit(text_surface, (self.screen_width/2-15, self.screen_heigth/2-200))
 
     def start(self):
         pygame.init()
@@ -127,10 +133,12 @@ class Controller():
                     bullet_group.add(player.create_bullet())
 
             self.screen.fill('white')
+            self.display_score()
             if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
             
             killed = pygame.sprite.groupcollide(enemy_group, bullet_group, True, True)
             if killed:
+                self.score += 10
                 self.create_enemy(enemy_group)
             
             bullet_group.draw(self.screen)
