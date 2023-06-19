@@ -11,15 +11,33 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.x = screen_size[0]/2
         self.y = screen_size[1]/2
+        self.is_left = False
         self.screen = (screen_size[0], screen_size[1])
-        self.image = pygame.Surface((60,60))
-        self.image.fill((0, 0, 0))
+        self.original_image = pygame.image.load('Player_idle.png')
+        self.original_image = pygame.transform.scale(self.original_image, (80,80))
+        self.image = self.original_image.copy()
         self.rect = self.image.get_rect(center = (self.x, self.y))
+
+    def throw_animation(self):
+        is_cliked = pygame.mouse.get_pressed()[0]
+        if is_cliked:
+            self.original_image = pygame.image.load('Player_throw.png')
+            self.original_image = pygame.transform.scale(self.original_image, (80,80))
+        elif not is_cliked:
+            self.original_image = pygame.image.load('Player_idle.png')
+            self.original_image = pygame.transform.scale(self.original_image, (80,80))
 
     def create_bullet(self):
         mouse_pos = pygame.mouse.get_pos()
         angle = get_angle_between((self.x, self.y), mouse_pos)
         return Bullet(self.x, self.y, self.screen, angle)
+
+    def update(self):
+        mouse_x, _ = pygame.mouse.get_pos()
+        if mouse_x <= self.x: self.is_left = True
+        elif mouse_x > self.x: self.is_left = False
+        self.image = pygame.transform.flip(self.original_image, self.is_left, False)
+        self.throw_animation()
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, screen_size) -> None:
@@ -101,7 +119,7 @@ class Controller():
     def display_score(self):
         font = pygame.font.Font('Planes_ValMore.ttf', 60)
         text_surface = font.render(str(self.score), False, 'Black')
-        self.screen.blit(text_surface, (self.screen_width/2-15, self.screen_heigth/2-200))
+        self.screen.blit(text_surface, (self.screen_width-160, 20))
 
     def start(self):
         pygame.init()
@@ -113,6 +131,7 @@ class Controller():
         player_group = pygame.sprite.Group()
         bullet_group = pygame.sprite.Group()
         enemy_group = pygame.sprite.Group()
+
         for _ in range(4):
             self.create_enemy(enemy_group)
         player_group.add(player)
@@ -124,22 +143,26 @@ class Controller():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     bullet_group.add(player.create_bullet())
 
+            if self.score <= 0: self.score = 0
             self.screen.fill('white')
+
             if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
-            killed = pygame.sprite.groupcollide(enemy_group, bullet_group, True, True)
-            if killed:
+            if pygame.sprite.groupcollide(enemy_group, bullet_group, True, True):
                 self.score += 10
                 self.create_enemy(enemy_group)
+
             bullet_group.draw(self.screen)
             player_group.draw(self.screen)
             enemy_group.draw(self.screen)
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
-            self.display_score()
             enemy_group.update(player)
+            player_group.update()
+
             for bullet in bullet_group.sprites():
                 if bullet.update():
-                    if self.score <= 0: self.score = 0
-                    else: self.score -= 20
+                    self.score -= 20
+
+            self.display_score()
             pygame.display.flip()
             self.clock.tick(60)
 
