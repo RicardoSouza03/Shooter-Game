@@ -18,7 +18,7 @@ class Player(pygame.sprite.Sprite):
 
     def create_bullet(self):
         mouse_pos = pygame.mouse.get_pos()
-        angle = get_angle_between((self.x-20, self.y), mouse_pos)
+        angle = get_angle_between((self.x, self.y), mouse_pos)
         return Bullet(self.x, self.y, self.screen, angle)
 
 class Enemy(pygame.sprite.Sprite):
@@ -84,10 +84,12 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.x += math.cos(self.angle) * self.speed
         self.rect.y += math.sin(self.angle) * self.speed
 
-        if self.rect.x >= self.screen_w or self.rect.x < 0:
+        if self.rect.x >= self.screen_w or self.rect.x < -20:
             self.kill()
-        if self.rect.y >= self.screen_h or self.rect.y < 0:
+            return True
+        if self.rect.y >= self.screen_h or self.rect.y < -20:
             self.kill()
+            return True
 
 class Controller():
     def __init__(self) -> None:
@@ -133,20 +135,21 @@ class Controller():
                     bullet_group.add(player.create_bullet())
 
             self.screen.fill('white')
-            self.display_score()
             if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
-            
             killed = pygame.sprite.groupcollide(enemy_group, bullet_group, True, True)
             if killed:
                 self.score += 10
                 self.create_enemy(enemy_group)
-            
             bullet_group.draw(self.screen)
             player_group.draw(self.screen)
             enemy_group.draw(self.screen)
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
+            self.display_score()
             enemy_group.update(player)
-            bullet_group.update()
+            for bullet in bullet_group.sprites():
+                if bullet.update():
+                    if self.score <= 0: self.score = 0
+                    else: self.score -= 20
             pygame.display.flip()
             self.clock.tick(60)
 
