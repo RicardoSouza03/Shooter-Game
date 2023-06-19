@@ -56,7 +56,6 @@ class Enemy(pygame.sprite.Sprite):
         else:
             random_y = screen_size[1]
         
-        
         self.x = random_x
         self.y = random_y
 
@@ -70,7 +69,7 @@ class Bullet(pygame.sprite.Sprite):
         self.original_image = pygame.Surface((20,20))
         self.original_image.fill((225, 0, 0))
         self.image = self.original_image
-        self.rect = self.original_image.get_rect(center = (pos_x, pos_y))
+        self.rect = self.image.get_rect(center = (pos_x, pos_y))
         self.set_rounded()
 
     def set_rounded(self):
@@ -81,13 +80,13 @@ class Bullet(pygame.sprite.Sprite):
         self.image = self.original_image.copy().convert_alpha()
         self.image.blit(self.rect_image, (0, 0), None, pygame.BLEND_RGBA_MIN) 
 
-    def update(self) -> None:
+    def update(self):
         self.rect.x += math.cos(self.angle) * self.speed
         self.rect.y += math.sin(self.angle) * self.speed
 
-        if self.rect.x >= self.screen_w:
+        if self.rect.x >= self.screen_w or self.rect.x < 0:
             self.kill()
-        if self.rect.y >= self.screen_h:
+        if self.rect.y >= self.screen_h or self.rect.y < 0:
             self.kill()
 
 class Controller():
