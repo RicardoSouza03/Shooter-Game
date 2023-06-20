@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.y = screen_size[1]/2
         self.is_left = False
         self.screen = (screen_size[0], screen_size[1])
-        self.original_image = pygame.image.load('Player_idle.png')
+        self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (80,80))
         self.image = self.original_image.copy()
         self.rect = self.image.get_rect(center = (self.x, self.y))
@@ -21,10 +21,10 @@ class Player(pygame.sprite.Sprite):
     def throw_animation(self):
         is_cliked = pygame.mouse.get_pressed()[0]
         if is_cliked:
-            self.original_image = pygame.image.load('Player_throw.png')
+            self.original_image = pygame.image.load('sprites/characters/Player_throw.png').convert_alpha()
             self.original_image = pygame.transform.scale(self.original_image, (80,80))
         elif not is_cliked:
-            self.original_image = pygame.image.load('Player_idle.png')
+            self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
             self.original_image = pygame.transform.scale(self.original_image, (80,80))
 
     def create_bullet(self):
@@ -45,7 +45,7 @@ class Enemy(pygame.sprite.Sprite):
         self.spawn(screen_size)
         self.screen_size = screen_size
         self.speed = 1
-        self.original_image = pygame.image.load('enemie.png').convert_alpha()
+        self.original_image = pygame.image.load('sprites/characters/enemie.png').convert_alpha()
         self.image = pygame.transform.scale(self.original_image, (40,40))
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
@@ -84,7 +84,7 @@ class Bullet(pygame.sprite.Sprite):
         self.angle = angle
         self.screen_w = screen[0]
         self.screen_h = screen[1]
-        self.original_image = pygame.image.load('Bullet.png')
+        self.original_image = pygame.image.load('sprites/Bullet.png')
         self.image = pygame.transform.scale(self.original_image, (40,40))
         self.rect = self.image.get_rect(center = (pos_x, pos_y))
 
@@ -113,13 +113,26 @@ class Controller():
         enemy_group.add(enemy)
 
     def change_cursor(self):
-        image = pygame.image.load('cross hair.png').convert_alpha()
+        image = pygame.image.load('sprites/cross hair.png').convert_alpha()
         self.cursor = pygame.transform.scale(image, (40, 40))
 
     def display_score(self):
-        font = pygame.font.Font('Planes_ValMore.ttf', 60)
-        text_surface = font.render(str(self.score), False, 'Black')
+        font = pygame.font.Font('sprites/Planes_ValMore.ttf', 60)
+        text_surface = font.render(str(self.score), False, 'White')
         self.screen.blit(text_surface, (self.screen_width-160, 20))
+
+    def set_background(self):
+        img_01 = pygame.transform.scale(pygame.image.load('sprites/background/sky.png').convert_alpha(), (self.screen_width, self.screen_heigth))
+        img_02 = pygame.transform.scale(pygame.image.load('sprites/background/moon.png').convert_alpha(), (self.screen_width, 324))
+        img_03 = pygame.transform.scale(pygame.image.load('sprites/background/clouds_front.png').convert_alpha(), (self.screen_width, 324))
+        img_04 = pygame.transform.scale(pygame.image.load('sprites/background/clouds_back.png').convert_alpha(), (self.screen_width, 324))
+        img_05 = pygame.transform.scale(pygame.image.load('sprites/background/Spaceship.png').convert_alpha(), (45, 45))
+        img_05 = pygame.transform.flip(img_05, False, True)
+        self.screen.blit(img_01, (0, 0))
+        self.screen.blit(img_02, (0, 0))
+        self.screen.blit(img_05, (self.screen_width/2-25, self.screen_heigth/2+18))
+        self.screen.blit(img_03, (0, self.screen_heigth/2+75))
+        self.screen.blit(img_04, (0, self.screen_heigth/2+75))
 
     def start(self):
         pygame.init()
@@ -144,7 +157,7 @@ class Controller():
                     bullet_group.add(player.create_bullet())
 
             if self.score <= 0: self.score = 0
-            self.screen.fill('white')
+            self.set_background()
 
             if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
             if pygame.sprite.groupcollide(enemy_group, bullet_group, True, True):
