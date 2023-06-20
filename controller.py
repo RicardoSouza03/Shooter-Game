@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.is_left = False
         self.screen = (screen_size[0], screen_size[1])
         self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (80,80))
+        self.original_image = pygame.transform.scale(self.original_image, (60,70))
         self.image = self.original_image.copy()
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
@@ -22,10 +22,10 @@ class Player(pygame.sprite.Sprite):
         is_cliked = pygame.mouse.get_pressed()[0]
         if is_cliked:
             self.original_image = pygame.image.load('sprites/characters/Player_throw.png').convert_alpha()
-            self.original_image = pygame.transform.scale(self.original_image, (80,80))
+            self.original_image = pygame.transform.scale(self.original_image, (55,70))
         elif not is_cliked:
             self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
-            self.original_image = pygame.transform.scale(self.original_image, (80,80))
+            self.original_image = pygame.transform.scale(self.original_image, (60,70))
 
     def create_bullet(self):
         mouse_pos = pygame.mouse.get_pos()
