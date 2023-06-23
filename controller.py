@@ -47,7 +47,14 @@ class Enemy(pygame.sprite.Sprite):
         self.screen_size = screen_size
         self.speed = 1
         self.image = pygame.transform.scale(self.original_image, (40,40))
+        self.explosion_list = []
+        for i in range(1,4):
+            img = pygame.image.load(f'sprites/pop_0{i + 1}.png').convert_alpha()
+            img = pygame.transform.scale(img, (40,40))
+            self.explosion_list.append(img)
+        self.explosion_index = 0
         self.rect = self.image.get_rect(center = (self.x, self.y))
+        self.frame_counter = 0
 
     def update(self, player):
         # Move enemy towards player.
@@ -57,8 +64,22 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += direction_x * self.speed
         self.rect.y += direction_y * self.speed
 
+        self.frame_counter += 1
+
         if self.life <= 0:
-            self.kill()
+            if self.explosion_animation():
+                self.kill()
+
+    def explosion_animation(self):
+        explosion_speed = 1
+
+        if self.frame_counter >= explosion_speed and self.explosion_index < len(self.explosion_list) - 1:
+            self.frame_counter = 0
+            self.explosion_index += 1
+            self.image = self.explosion_list[self.explosion_index]
+
+        if self.explosion_index >= len(self.explosion_list) - 1 and self.frame_counter >= explosion_speed:
+            return True
 
     def enemy_randomizer(self, enemy_level: int):
         random_level = random.randint(1, enemy_level)
