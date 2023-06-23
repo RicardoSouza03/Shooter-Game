@@ -19,11 +19,11 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
     def throw_animation(self):
-        is_cliked = pygame.mouse.get_pressed()[0]
-        if is_cliked:
+        is_cliked = pygame.mouse.get_pressed()
+        if is_cliked[0] or is_cliked[1] or is_cliked[2]:
             self.original_image = pygame.image.load('sprites/characters/Player_throw.png').convert_alpha()
             self.original_image = pygame.transform.scale(self.original_image, (55,70))
-        elif not is_cliked:
+        elif not (is_cliked[0] or is_cliked[1] or is_cliked[2]):
             self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
             self.original_image = pygame.transform.scale(self.original_image, (60,70))
 
@@ -99,6 +99,29 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
             return True
 
+class Button():
+    def __init__(self, x, y, image) -> None:
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.clicked = False
+
+    def draw(self, screen):
+        action = False
+
+        mouse_pos = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(mouse_pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                action = True
+        if pygame.mouse.get_pressed()[0] == 0 and self.clicked == True:
+            self.clicked = False
+
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        return action
+
 class Controller():
     def __init__(self) -> None:
         self.running = True
@@ -141,6 +164,18 @@ class Controller():
         if key[pygame.K_ESCAPE] and self.paused == False:
             self.paused = True
         
+    def display_pause_menu(self):
+        return_btn_img = pygame.image.load('sprites/buttons/return_button.png').convert_alpha()
+        return_btn_img = pygame.transform.scale(return_btn_img, (180, 50))
+        exit_btn_img = pygame.image.load('sprites/buttons/exit_button.png').convert_alpha()
+        exit_btn_img = pygame.transform.scale(exit_btn_img, (140, 50))
+        return_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, return_btn_img)
+        exit_btn = Button(self.screen_width/2-100, self.screen_heigth/2+20, exit_btn_img)
+        
+        if return_btn.draw(self.screen):
+            self.paused = False
+        if exit_btn.draw(self.screen):
+            self.running = False
 
     def start(self):
         pygame.init()
@@ -161,12 +196,13 @@ class Controller():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN and not self.paused:
                     bullet_group.add(player.create_bullet())
+
+            self.set_background()
 
             if not self.paused:
                 if self.score <= 0: self.score = 0
-                self.set_background()
                 self.pause()
 
                 if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
@@ -177,7 +213,6 @@ class Controller():
                 bullet_group.draw(self.screen)
                 player_group.draw(self.screen)
                 enemy_group.draw(self.screen)
-                self.screen.blit(self.cursor, pygame.mouse.get_pos())
                 enemy_group.update(player)
                 player_group.update()
 
@@ -188,7 +223,9 @@ class Controller():
                 self.display_score()
        
             elif self.paused == True:
-                print('paused')
+                self.display_pause_menu()
+
+            self.screen.blit(self.cursor, pygame.mouse.get_pos())
 
             pygame.display.flip()
             pygame.display.update()
