@@ -102,6 +102,7 @@ class Bullet(pygame.sprite.Sprite):
 class Controller():
     def __init__(self) -> None:
         self.running = True
+        self.paused = False
         self.clock = pygame.time.Clock()
         self.screen_width = 600
         self.screen_heigth = 800
@@ -134,6 +135,13 @@ class Controller():
         self.screen.blit(img_03, (0, self.screen_heigth/2+75))
         self.screen.blit(img_04, (0, self.screen_heigth/2+75))
 
+    def pause(self):
+        key = pygame.key.get_pressed()
+
+        if key[pygame.K_ESCAPE] and self.paused == False:
+            self.paused = True
+        
+
     def start(self):
         pygame.init()
         pygame.display.set_caption("Shooter game")
@@ -156,27 +164,34 @@ class Controller():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     bullet_group.add(player.create_bullet())
 
-            if self.score <= 0: self.score = 0
-            self.set_background()
+            if not self.paused:
+                if self.score <= 0: self.score = 0
+                self.set_background()
+                self.pause()
 
-            if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
-            if pygame.sprite.groupcollide(enemy_group, bullet_group, True, True):
-                self.score += 10
-                self.create_enemy(enemy_group)
+                if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
+                if pygame.sprite.groupcollide(enemy_group, bullet_group, True, True):
+                    self.score += 10
+                    self.create_enemy(enemy_group)
 
-            bullet_group.draw(self.screen)
-            player_group.draw(self.screen)
-            enemy_group.draw(self.screen)
-            self.screen.blit(self.cursor, pygame.mouse.get_pos())
-            enemy_group.update(player)
-            player_group.update()
+                bullet_group.draw(self.screen)
+                player_group.draw(self.screen)
+                enemy_group.draw(self.screen)
+                self.screen.blit(self.cursor, pygame.mouse.get_pos())
+                enemy_group.update(player)
+                player_group.update()
 
-            for bullet in bullet_group.sprites():
-                if bullet.update():
-                    self.score -= 20
+                for bullet in bullet_group.sprites():
+                    if bullet.update():
+                        self.score -= 20
 
-            self.display_score()
+                self.display_score()
+       
+            elif self.paused == True:
+                print('paused')
+
             pygame.display.flip()
+            pygame.display.update()
             self.clock.tick(60)
 
 if __name__ == "__main__":
