@@ -57,11 +57,15 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += direction_x * self.speed
         self.rect.y += direction_y * self.speed
 
+        if self.life <= 0:
+            self.kill()
+
     def enemy_randomizer(self, enemy_level: int):
         random_level = random.randint(1, enemy_level)
         if enemy_level == 1: random_level = 1
         enemy_by_level = {1: 'sprites/characters/enemie.png', 2: 'sprites/characters/enemie2.png', 3: 'sprites/characters/enemie3.png'}
         self.original_image = pygame.image.load(enemy_by_level[random_level]).convert_alpha()
+        self.life = random_level
 
     def spawn(self, screen_size):
         # Sets enemy position at a random position on screen.
@@ -188,7 +192,7 @@ class Controller():
             self.enemy_count = 6
         if self.score >= 2800:
             self.level = 3
-            self.enemy_count = 8
+            self.enemy_count = 7
 
     def start(self):
         pygame.init()
@@ -220,7 +224,10 @@ class Controller():
                     self.create_enemy(enemy_group)
 
                 if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
-                if pygame.sprite.groupcollide(enemy_group, bullet_group, True, True):
+                bullet_collied_enemy = pygame.sprite.groupcollide(enemy_group, bullet_group, False, True)
+                if bullet_collied_enemy:
+                    enemy_hit = bullet_collied_enemy.popitem()[0]
+                    enemy_hit.life -= 1
                     self.score += 10
 
                 bullet_group.draw(self.screen)
