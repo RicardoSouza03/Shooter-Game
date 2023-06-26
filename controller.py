@@ -283,7 +283,7 @@ class Controller():
 
                 if pygame.sprite.spritecollide(self.player, enemy_group, False): 
                     self.player.life -= 1
-                    self.clock.tick(40)
+                    self.clock.tick(20)
                     if len(player_group) <= 0:
                         self.lost = True
                         self.paused = True
