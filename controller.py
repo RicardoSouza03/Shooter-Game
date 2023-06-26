@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.x = screen_size[0]/2
         self.y = screen_size[1]/2
         self.is_left = False
+        self.life = 1
         self.screen = (screen_size[0], screen_size[1])
         self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (60,70))
@@ -38,6 +39,9 @@ class Player(pygame.sprite.Sprite):
         elif mouse_x > self.x: self.is_left = False
         self.image = pygame.transform.flip(self.original_image, self.is_left, False)
         self.throw_animation()
+
+        if self.life <= 0:
+            self.kill()
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, screen_size, enemy_level) -> None:
@@ -159,12 +163,14 @@ class Controller():
         self.running = True
         self.paused = False
         self.level = 1
+        self.lost = False
         self.enemy_count = 4
         self.clock = pygame.time.Clock()
         self.screen_width = 600
         self.screen_heigth = 800
         self.score = 0
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
+        self.player = Player((self.screen_width, self.screen_heigth))
 
     def create_enemy(self, enemy_group):
         enemy = Enemy((self.screen_width, self.screen_heigth), self.level)
@@ -198,14 +204,31 @@ class Controller():
         if key[pygame.K_ESCAPE] and self.paused == False:
             self.paused = True
         
-    def display_pause_menu(self):
+    def display_pause_menu(self, groups):
         return_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/return_button.png').convert_alpha(), (180, 50))
         exit_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/exit_button.png').convert_alpha(), (140, 50))
+        try_again_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/newGame_button.png').convert_alpha(), (180, 50))
         return_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, return_btn_img)
         exit_btn = Button(self.screen_width/2-100, self.screen_heigth/2+20, exit_btn_img)
+        try_again_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, try_again_btn_img)
         
-        if return_btn.draw(self.screen): self.paused = False
-        if exit_btn.draw(self.screen): self.running = False
+        if self.lost:
+            if try_again_btn.draw(self.screen): self.reset_game(groups)
+            if exit_btn.draw(self.screen): self.running = False
+        else:
+            if return_btn.draw(self.screen): self.paused = False
+            if exit_btn.draw(self.screen): self.running = False
+
+    def reset_game(self, groups):
+        self.player = Player((self.screen_width, self.screen_heigth))
+        groups[0].empty()
+        groups[1].add(self.player)
+        groups[2].empty()
+        self.score = 0
+        self.level = 1
+        self.lost = False
+        self.enemy_count = 4
+        self.paused = False
 
     def difficult_handler(self):
         if self.score >= 1000: 
@@ -221,19 +244,18 @@ class Controller():
         pygame.mouse.set_visible(False)
         self.change_cursor()
 
-        player = Player((self.screen_width, self.screen_heigth))
         player_group = pygame.sprite.Group()
         bullet_group = pygame.sprite.Group()
         enemy_group = pygame.sprite.Group()
 
-        player_group.add(player)
+        player_group.add(self.player)
 
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
                 if event.type == pygame.MOUSEBUTTONDOWN and not self.paused:
-                    bullet_group.add(player.create_bullet())
+                    bullet_group.add(self.player.create_bullet())
 
             self.set_background()
             self.difficult_handler()
@@ -244,7 +266,12 @@ class Controller():
                 if len(enemy_group) < self.enemy_count:
                     self.create_enemy(enemy_group)
 
-                if pygame.sprite.spritecollide(player, enemy_group, True): self.running = False
+                if pygame.sprite.spritecollide(self.player, enemy_group, False): 
+                    self.player.life -= 1
+                    self.clock.tick(40)
+                    if len(player_group) <= 0:
+                        self.lost = True
+                        self.paused = True
                 bullet_collied_enemy = pygame.sprite.groupcollide(enemy_group, bullet_group, False, True)
                 if bullet_collied_enemy:
                     enemy_hit = bullet_collied_enemy.popitem()[0]
@@ -254,7 +281,7 @@ class Controller():
                 bullet_group.draw(self.screen)
                 player_group.draw(self.screen)
                 enemy_group.draw(self.screen)
-                enemy_group.update(player)
+                enemy_group.update(self.player)
                 player_group.update()
 
                 for bullet in bullet_group.sprites():
@@ -264,7 +291,7 @@ class Controller():
                 self.display_score()
        
             elif self.paused == True:
-                self.display_pause_menu()
+                self.display_pause_menu([enemy_group, player_group, bullet_group])
 
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
 
