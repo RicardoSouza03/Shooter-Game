@@ -178,7 +178,7 @@ class Controller():
         self.running = True
         self.paused = False
         self.level = 1
-        self.lost = False
+        self.lost = True
         self.enemy_count = 4
         self.clock = pygame.time.Clock()
         self.screen_width = 600
@@ -202,6 +202,7 @@ class Controller():
 
     def set_background(self):
         imgs_list = os.listdir('sprites/background/')
+        reversed_img = False
         for image in sorted(imgs_list, reverse=True):
             if image == "sky.png": 
                 scale = (self.screen_width, self.screen_heigth)
@@ -209,11 +210,16 @@ class Controller():
             elif image == "Spaceship.png":
                 scale = (45, 45)
                 position = (self.screen_width/2-25, self.screen_heigth/2+18)
+                reversed_img = True
             else: 
                 scale = (self.screen_width, 324)
                 position = (0, self.screen_heigth/2+75)
 
-            img = pygame.transform.scale(pygame.image.load(f"sprites/background/{image}").convert_alpha(), scale)
+            if reversed_img:
+                img = pygame.transform.scale(pygame.image.load(f"sprites/background/{image}").convert_alpha(), scale)
+                img = pygame.transform.rotate(img, 180)
+            else:
+                img = pygame.transform.scale(pygame.image.load(f"sprites/background/{image}").convert_alpha(), scale)
             self.screen.blit(img, position)
 
     def pause(self):
@@ -223,22 +229,24 @@ class Controller():
             self.paused = True
         
     def display_pause_menu(self, groups):
-        return_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/return_button.png').convert_alpha(), (200, 50))
-        exit_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/exit_button.png').convert_alpha(), (160, 50))
-        try_again_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/newGame_button.png').convert_alpha(), (200, 50))
-        return_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, return_btn_img)
-        exit_btn = Button(self.screen_width/2-100, self.screen_heigth/2+20, exit_btn_img)
-        try_again_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, try_again_btn_img)
+        buttons_list = []
+        for button in os.listdir('sprites/buttons'):
+            if button == 'exit_button.png': 
+                image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/{button}').convert_alpha(), (160, 50))
+                buttons_list.append(Button(self.screen_width/2-100, self.screen_heigth/2+20, image))
+            else:
+                image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/{button}').convert_alpha(), (200, 50))
+                buttons_list.append(Button(self.screen_width/2-100, self.screen_heigth/2-50, image))
         
         if self.lost:
-            self.display_text('You Lost', (self.screen_width/2-130, 100), 60)
-            self.display_text(f'Score: {self.score}', (self.screen_width/2-130, 170), 40)
-            if try_again_btn.draw(self.screen): self.reset_game(groups)
-            if exit_btn.draw(self.screen): self.running = False
+            self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
+            self.display_text(f'Best score: {self.score}', (self.screen_width/2-140, 170), 40)
+            if buttons_list[1].draw(self.screen): self.reset_game(groups)
+            if buttons_list[0].draw(self.screen): self.running = False
         else:
             self.display_text('Paused', (self.screen_width/2-100, 100), 60)
-            if return_btn.draw(self.screen): self.paused = False
-            if exit_btn.draw(self.screen): self.running = False
+            if buttons_list[2].draw(self.screen): self.paused = False
+            if buttons_list[0].draw(self.screen): self.running = False
 
     def reset_game(self, groups):
         self.player = Player((self.screen_width, self.screen_heigth))
@@ -247,9 +255,8 @@ class Controller():
         groups[2].empty()
         self.score = 0
         self.level = 1
-        self.lost = False
+        self.lost, self.paused = False, False
         self.enemy_count = 4
-        self.paused = False
 
     def difficult_handler(self):
         if self.score >= 1000: 
@@ -258,6 +265,7 @@ class Controller():
         if self.score >= 2800:
             self.level = 3
             self.enemy_count = 7
+
 
     def start(self):
         pygame.init()
@@ -269,8 +277,6 @@ class Controller():
         bullet_group = pygame.sprite.Group()
         enemy_group = pygame.sprite.Group()
 
-        player_group.add(self.player)
-
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -280,7 +286,7 @@ class Controller():
 
             self.set_background()
             self.difficult_handler()
-            if not self.paused:
+            if not self.paused and not self.lost:
                 if self.score <= 0: self.score = 0
                 self.pause()
 
@@ -312,7 +318,7 @@ class Controller():
 
                 self.display_text(self.score, (self.screen_width-160, 20), 60)
        
-            elif self.paused == True:
+            elif self.paused or self.lost:
                 self.display_pause_menu([enemy_group, player_group, bullet_group])
 
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
