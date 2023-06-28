@@ -195,10 +195,10 @@ class Controller():
         image = pygame.image.load('sprites/cross hair.png').convert_alpha()
         self.cursor = pygame.transform.scale(image, (40, 40))
 
-    def display_score(self):
-        font = pygame.font.Font('sprites/Planes_ValMore.ttf', 60)
-        text_surface = font.render(str(self.score), False, 'White')
-        self.screen.blit(text_surface, (self.screen_width-160, 20))
+    def display_text(self, text: str, location: tuple, font_size: int):
+        font = pygame.font.Font('sprites/Planes_ValMore.ttf', font_size)
+        text_surface = font.render(str(text), False, 'White')
+        self.screen.blit(text_surface, location)
 
     def set_background(self):
         img_01 = pygame.transform.scale(pygame.image.load('sprites/background/sky.png').convert_alpha(), (self.screen_width, self.screen_heigth))
@@ -228,9 +228,12 @@ class Controller():
         try_again_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, try_again_btn_img)
         
         if self.lost:
+            self.display_text('You Lost', (self.screen_width/2-130, 100), 60)
+            self.display_text(f'Score: {self.score}', (self.screen_width/2-130, 170), 40)
             if try_again_btn.draw(self.screen): self.reset_game(groups)
             if exit_btn.draw(self.screen): self.running = False
         else:
+            self.display_text('Paused', (self.screen_width/2-100, 100), 60)
             if return_btn.draw(self.screen): self.paused = False
             if exit_btn.draw(self.screen): self.running = False
 
@@ -282,11 +285,12 @@ class Controller():
                     self.create_enemy(enemy_group)
 
                 if pygame.sprite.spritecollide(self.player, enemy_group, False): 
-                    self.player.life -= 1
                     self.clock.tick(20)
+                    self.player.life -= 1
                     if len(player_group) <= 0:
                         self.lost = True
                         self.paused = True
+                
                 bullet_collied_enemy = pygame.sprite.groupcollide(enemy_group, bullet_group, False, True)
                 if bullet_collied_enemy:
                     enemy_hit = bullet_collied_enemy.popitem()[0]
@@ -303,7 +307,7 @@ class Controller():
                     if bullet.update():
                         self.score -= 20
 
-                self.display_score()
+                self.display_text(self.score, (self.screen_width-160, 20), 60)
        
             elif self.paused == True:
                 self.display_pause_menu([enemy_group, player_group, bullet_group])
