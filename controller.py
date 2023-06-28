@@ -79,6 +79,7 @@ class Controller():
             if buttons_list[0].draw(self.screen): self.running = False
 
     def reset_game(self, groups):
+        pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
         self.player = Player((self.screen_width, self.screen_heigth))
         groups[0].empty()
         groups[1].add(self.player)
@@ -133,12 +134,13 @@ class Controller():
                 if len(enemy_group) < self.enemy_count:
                     self.create_enemy(enemy_group)
 
-                if pygame.sprite.spritecollide(self.player, enemy_group, False): 
+                if pygame.sprite.spritecollide(self.player, enemy_group, False):
+                    pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
                     self.clock.tick(20)
                     self.player.life -= 1
-                    if len(player_group) <= 0:
-                        self.main_menu = True
-                        self.paused = True
+                if len(player_group.sprites()) <= 0:
+                    self.main_menu = True
+                    self.paused = True
                 
                 bullet_collied_enemy = pygame.sprite.groupcollide(enemy_group, bullet_group, False, True)
                 if bullet_collied_enemy:
