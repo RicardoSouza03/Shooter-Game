@@ -70,7 +70,8 @@ class Controller():
         if self.main_menu:
             self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
             best_score = self.best_score(self.score)
-            self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 170), 40)
+            self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
+            if self.score > 0: self.display_text(f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
             if buttons_list[1].draw(self.screen): self.reset_game(groups)
             if buttons_list[0].draw(self.screen): self.running = False
         else:
