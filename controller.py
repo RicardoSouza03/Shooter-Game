@@ -1,4 +1,4 @@
-import pygame, math, random
+import pygame, math, random, os
 
 def get_angle_between(point1, point2):
     dx = point2[0] - point1[0]
@@ -201,17 +201,20 @@ class Controller():
         self.screen.blit(text_surface, location)
 
     def set_background(self):
-        img_01 = pygame.transform.scale(pygame.image.load('sprites/background/sky.png').convert_alpha(), (self.screen_width, self.screen_heigth))
-        img_02 = pygame.transform.scale(pygame.image.load('sprites/background/moon.png').convert_alpha(), (self.screen_width, 324))
-        img_03 = pygame.transform.scale(pygame.image.load('sprites/background/clouds_front.png').convert_alpha(), (self.screen_width, 324))
-        img_04 = pygame.transform.scale(pygame.image.load('sprites/background/clouds_back.png').convert_alpha(), (self.screen_width, 324))
-        img_05 = pygame.transform.scale(pygame.image.load('sprites/background/Spaceship.png').convert_alpha(), (45, 45))
-        img_05 = pygame.transform.flip(img_05, False, True)
-        self.screen.blit(img_01, (0, 0))
-        self.screen.blit(img_02, (0, 0))
-        self.screen.blit(img_05, (self.screen_width/2-25, self.screen_heigth/2+18))
-        self.screen.blit(img_03, (0, self.screen_heigth/2+75))
-        self.screen.blit(img_04, (0, self.screen_heigth/2+75))
+        imgs_list = os.listdir('sprites/background/')
+        for image in sorted(imgs_list, reverse=True):
+            if image == "sky.png": 
+                scale = (self.screen_width, self.screen_heigth)
+                position = (0, 0)
+            elif image == "Spaceship.png":
+                scale = (45, 45)
+                position = (self.screen_width/2-25, self.screen_heigth/2+18)
+            else: 
+                scale = (self.screen_width, 324)
+                position = (0, self.screen_heigth/2+75)
+
+            img = pygame.transform.scale(pygame.image.load(f"sprites/background/{image}").convert_alpha(), scale)
+            self.screen.blit(img, position)
 
     def pause(self):
         key = pygame.key.get_pressed()
@@ -220,9 +223,9 @@ class Controller():
             self.paused = True
         
     def display_pause_menu(self, groups):
-        return_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/return_button.png').convert_alpha(), (180, 50))
-        exit_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/exit_button.png').convert_alpha(), (140, 50))
-        try_again_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/newGame_button.png').convert_alpha(), (180, 50))
+        return_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/return_button.png').convert_alpha(), (200, 50))
+        exit_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/exit_button.png').convert_alpha(), (160, 50))
+        try_again_btn_img = pygame.transform.scale(pygame.image.load('sprites/buttons/newGame_button.png').convert_alpha(), (200, 50))
         return_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, return_btn_img)
         exit_btn = Button(self.screen_width/2-100, self.screen_heigth/2+20, exit_btn_img)
         try_again_btn = Button(self.screen_width/2-100, self.screen_heigth/2-50, try_again_btn_img)
