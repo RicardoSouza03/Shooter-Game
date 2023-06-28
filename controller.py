@@ -240,7 +240,8 @@ class Controller():
         
         if self.lost:
             self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
-            self.display_text(f'Best score: {self.score}', (self.screen_width/2-140, 170), 40)
+            best_score = self.best_score(self.score)
+            self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 170), 40)
             if buttons_list[1].draw(self.screen): self.reset_game(groups)
             if buttons_list[0].draw(self.screen): self.running = False
         else:
@@ -266,6 +267,16 @@ class Controller():
             self.level = 3
             self.enemy_count = 7
 
+    def best_score(self, new_score):
+        with open('best_score.txt', mode='r+') as txt:
+            best_score = txt.readline()
+            if new_score and int(new_score) > int(best_score):
+                txt.seek(0)
+                txt.truncate()
+                txt.write(str(new_score))
+                return str(new_score)
+            else:
+                return str(best_score)
 
     def start(self):
         pygame.init()
