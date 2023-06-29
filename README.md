@@ -17,7 +17,7 @@ Here is a little trailer gif from the game and a photo from the game menu.
   <img align="top" src='assets/Shooter Game Trailer GIF.gif' width=400 />
 </span>
 <span>
-  <img align="top" src='assets/Shooter Game Menu.png' width=400 />
+  <img align="top" src='assets/Shooter Game Menu.png' width=400 height=500 />
 </span>
 
 ### How to play:
