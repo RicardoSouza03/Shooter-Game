@@ -23,6 +23,8 @@ class Controller():
     def change_cursor(self):
         image = pygame.image.load('sprites/cross hair.png').convert_alpha()
         self.cursor = pygame.transform.scale(image, (40, 40))
+        win_icon = pygame.image.load('icon.ico').convert_alpha()
+        pygame.display.set_icon(win_icon)
 
     def display_text(self, text: str, location: tuple, font_size: int):
         font = pygame.font.Font('sprites/Planes_ValMore.ttf', font_size)
