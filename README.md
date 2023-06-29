@@ -22,7 +22,7 @@ Here is a little trailer gif from the game and a photo from the game menu.
 
 ### How to play:
 
-I'm still looking for ways to publish the game to the public with no bugs, but for now, if you have interest you can:
+You can donwload the game through this [link](https://drive.google.com/file/d/1UxOPeqjZ6lggQkM-3JvIaG2AL4j6y3aH/view?usp=sharing). Or if you want, you can also:
 
 * Clone this repository with ```git clone git@github.com:RicardoSouza03/Shooter-Game.git```
 * Access the folder with the files
