@@ -14,10 +14,10 @@ In this game enemies fly towards Rodolfo (the player/you) from space, hoping to 
 Here is a little trailer gif from the game and a photo from the game menu.
 
 <span>
-  <img align="top" src='assets/Shooter Game Trailer GIF.gif' width=500 />
+  <img align="top" src='assets/Shooter Game Trailer GIF.gif' width=400 />
 </span>
 <span>
-  <img align="top" src='assets/Shooter Game Menu.png' width=500 height=625 />
+  <img align="top" src='assets/Shooter Game Menu.png' width=400 />
 </span>
 
 ### How to play:
