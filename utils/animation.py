@@ -1,29 +1,38 @@
 import pygame
 
 class Animation(pygame.sprite.Sprite):
-    def __init__(self, scale: tuple, image_path, images_length) -> None:
+    def __init__(self, animation_sheet, steps, speed, width, height, scale) -> None:
         super().__init__()
-        self.image_list = []
-        self.index = 0
-        self.counter = 0
-        self.speed = 1
-        self.ended = False
-        for i in range(1, images_length):
-            img = pygame.image.load(f'{image_path}{i + 1}.png').convert_alpha()
-            img = pygame.transform.scale(img, scale)
-            self.image_list.append(img)
-        self.image = self.image_list[self.index]
+        self.sheet_image = pygame.image.load(animation_sheet).convert_alpha()
+        self.frame = 0
+        self.ended = True
+        self.animation_speed = speed
+        self.steps = steps
+        self.width = width
+        self.height = height
+        self.scale = scale
+        self.last_update = pygame.time.get_ticks()
+        self.animation_list = []
+        for counter in range(self.steps):
+            self.animation_list.append(self.get_image(counter))
+        self.image = self.animation_list[self.frame]
+
+    def get_image(self, counter):
+        image = pygame.Surface((self.width, self.height)).convert_alpha()
+        image.blit(self.sheet_image, (0, 0), ((counter * self.width), 0, self.width, self.height))
+        image = pygame.transform.scale(image, (self.width * self.scale, self.height * self.scale))
+        image.set_colorkey((0, 0, 0))
+
+        return image
     
     def update(self):
-        self.counter += 1
-        self.run_animation()
+        current_time = pygame.time.get_ticks()
+        self.ended = False
+        self.image = self.animation_list[self.frame]
 
-    def run_animation(self):
-        if self.counter >= self.speed and self.index < len(self.image_list) - 1:
-            self.counter = 0
-            self.index += 1
-            self.image = self.image_list[self.index]
-
-        if self.index >= len(self.image_list) - 1 and self.counter >= self.speed:
+        if current_time - self.last_update >= self.animation_speed:
+            self.frame += 1
+            self.last_update = current_time
+        if self.frame >= self.steps:
             self.ended = True
-            self.kill()
+            self.frame = 0
