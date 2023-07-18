@@ -3,27 +3,27 @@ from utils.angle_between import get_angle_between
 from utils.animation import Animation
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, screen_size) -> None:
+    def __init__(self, screen_size, skin_path) -> None:
         super().__init__()
         self.x = screen_size[0]/2
         self.y = screen_size[1]/2
-        self.is_left = False
         self.life = 1
-        self.death_animation = Animation((60,70), 'sprites/characters/death_0', 8)
+        self.skin_path = skin_path
+        self.idle_animation = Animation(f'{skin_path}/Idle_sheet.png', 4, 150, 32, 32, 3)
+        self.throw_animation = Animation(f'{skin_path}/Throw_sheet.png', 4, 30, 32, 32, 3)
+        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 150, 32, 32, 3)
         self.screen = (screen_size[0], screen_size[1])
-        self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (60,70))
-        self.image = self.original_image.copy()
+        self.image = self.idle_animation.image
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
-    def throw_animation(self):
-        is_cliked = pygame.mouse.get_pressed()
-        if is_cliked[0] or is_cliked[1] or is_cliked[2]:
-            self.original_image = pygame.image.load('sprites/characters/Player_throw.png').convert_alpha()
-            self.original_image = pygame.transform.scale(self.original_image, (55,70))
-        elif not (is_cliked[0] or is_cliked[1] or is_cliked[2]):
-            self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
-            self.original_image = pygame.transform.scale(self.original_image, (60,70))
+    def animation_setter(self):
+        is_clicked = pygame.mouse.get_pressed()
+        if is_clicked[0] or is_clicked[1] or is_clicked[2]:
+            self.throw_animation.update()
+            self.image = self.throw_animation.image 
+        else:
+            self.idle_animation.update()
+            self.image = self.idle_animation.image
 
     def create_bullet(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -32,10 +32,12 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         mouse_x, _ = pygame.mouse.get_pos()
-        if mouse_x <= self.x: self.is_left = True
-        elif mouse_x > self.x: self.is_left = False
-        self.image = pygame.transform.flip(self.original_image, self.is_left, False)
-        self.throw_animation()
+        self.animation_setter()
+
+        if mouse_x <= self.x: 
+            self.image = pygame.transform.flip(self.image, True, False).convert_alpha()
+        elif mouse_x > self.x: 
+            self.image = pygame.transform.flip(self.image, False, False).convert_alpha()
 
         if self.life <= 0:
             self.death_animation.update()
@@ -51,7 +53,7 @@ class Enemy(pygame.sprite.Sprite):
         self.screen_size = screen_size
         self.speed = 1
         self.image = pygame.transform.scale(self.original_image, (40,40))
-        self.explosion_animation = Animation((40,40), 'sprites/pop_0', 4)
+        self.explosion_animation = Animation('sprites/Pop_sheet.png', 4, 10, 40, 40, 1)
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
     def update(self, player):
