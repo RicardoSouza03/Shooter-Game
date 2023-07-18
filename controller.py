@@ -14,7 +14,8 @@ class Controller():
         self.screen_heigth = 800
         self.score = 0
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
-        self.player = Player((self.screen_width, self.screen_heigth))
+        self.player_skin_path = 'sprites/characters/blue_character'
+        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin_path)
 
     def create_enemy(self, enemy_group):
         enemy = Enemy((self.screen_width, self.screen_heigth), self.level)
@@ -59,31 +60,38 @@ class Controller():
         if key[pygame.K_ESCAPE] and self.paused == False:
             self.paused = True
         
-    def display_pause_menu(self, groups):
-        buttons_list = []
-        for button in os.listdir('sprites/buttons'):
-            if button == 'exit_button.png': 
-                image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/{button}').convert_alpha(), (160, 50))
-                buttons_list.append(Button(self.screen_width/2-100, self.screen_heigth/2+20, image))
-            else:
-                image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/{button}').convert_alpha(), (200, 50))
-                buttons_list.append(Button(self.screen_width/2-100, self.screen_heigth/2-50, image))
-        
-        if self.main_menu:
-            self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
-            best_score = self.best_score(self.score)
-            self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
-            if self.score > 0: self.display_text(f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
-            if buttons_list[1].draw(self.screen): self.reset_game(groups)
-            if buttons_list[0].draw(self.screen): self.running = False
-        else:
-            self.display_text('Paused', (self.screen_width/2-100, 100), 60)
-            if buttons_list[2].draw(self.screen): self.paused = False
-            if buttons_list[0].draw(self.screen): self.running = False
+    def display_pause_menu(self):
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/exit_button.png').convert_alpha(), (120, 50))
+        exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+10, image)
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_button.png').convert_alpha(), (200, 50))
+        return_button = Button(self.screen_width/2-100, self.screen_heigth/2-50, image)
+
+        self.display_text('Paused', (self.screen_width/2-100, 100), 60)
+        if return_button.draw(self.screen): self.paused = False
+        if exit_button.draw(self.screen): self.running = False
+
+    def display_main_menu(self, groups):
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/newGame_button.png').convert_alpha(), (200, 50))
+        new_game_button = Button(self.screen_width/2-100, self.screen_heigth/2-60, image)
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/options_button.png').convert_alpha(), (200, 50))
+        options_button = Button(self.screen_width/2-100, self.screen_heigth/2, image)
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/exit_button.png').convert_alpha(), (120, 50))
+        exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+60, image)
+
+        self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
+        best_score = self.best_score(self.score)
+        self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
+        if self.score > 0: self.display_text(f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
+        if new_game_button.draw(self.screen): self.reset_game(groups)
+        if options_button.draw(self.screen): self.reset_game(groups)
+        if exit_button.draw(self.screen): self.running = False
+
+    def display_options_menu(self):
+        ...
 
     def reset_game(self, groups):
         pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
-        self.player = Player((self.screen_width, self.screen_heigth))
+        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin_path)
         groups[0].empty()
         groups[1].add(self.player)
         groups[2].empty()
@@ -163,8 +171,10 @@ class Controller():
 
                 self.display_text(self.score, (self.screen_width-160, 20), 60)
        
-            elif self.paused or self.main_menu:
-                self.display_pause_menu([enemy_group, player_group, bullet_group])
+            elif self.paused and not self.main_menu:
+                self.display_pause_menu()
+            elif self.main_menu:
+                self.display_main_menu([enemy_group, player_group, bullet_group])
 
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
 
