@@ -9,9 +9,9 @@ class Player(pygame.sprite.Sprite):
         self.y = screen_size[1]/2
         self.life = 1
         self.skin_path = skin_path
-        self.idle_animation = Animation(f'{skin_path}/Idle_sheet.png', 4, 150, 32, 32, 3)
-        self.throw_animation = Animation(f'{skin_path}/Throw_sheet.png', 4, 30, 32, 32, 3)
-        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 150, 32, 32, 3)
+        self.idle_animation = Animation(f'{skin_path}/Idle_sheet.png', 4, 150, 32, 32, 3, True)
+        self.throw_animation = Animation(f'{skin_path}/Throw_sheet.png', 4, 40, 32, 32, 3, False)
+        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 150, 32, 32, 3, False)
         self.screen = (screen_size[0], screen_size[1])
         self.image = self.idle_animation.image
         self.rect = self.image.get_rect(center = (self.x, self.y))
@@ -20,8 +20,10 @@ class Player(pygame.sprite.Sprite):
         is_clicked = pygame.mouse.get_pressed()
         if is_clicked[0] or is_clicked[1] or is_clicked[2]:
             self.throw_animation.update()
-            self.image = self.throw_animation.image 
+            self.image = self.throw_animation.image
+            self.throw_animation.set_ended(False)
         else:
+            self.throw_animation.set_ended(True)
             self.idle_animation.update()
             self.image = self.idle_animation.image
 
@@ -42,7 +44,8 @@ class Player(pygame.sprite.Sprite):
         if self.life <= 0:
             self.death_animation.update()
             self.image = self.death_animation.image
-            if self.death_animation.ended == True:
+            self.death_animation.set_reset(False)
+            if self.death_animation.ended:
                 self.kill()
 
 class Enemy(pygame.sprite.Sprite):
@@ -53,7 +56,7 @@ class Enemy(pygame.sprite.Sprite):
         self.screen_size = screen_size
         self.speed = 1
         self.image = pygame.transform.scale(self.original_image, (40,40))
-        self.explosion_animation = Animation('sprites/Pop_sheet.png', 4, 10, 40, 40, 1)
+        self.explosion_animation = Animation('sprites/Pop_sheet.png', 4, 10, 40, 40, 1, False)
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
     def update(self, player):
@@ -67,7 +70,8 @@ class Enemy(pygame.sprite.Sprite):
         if self.life <= 0:
             self.explosion_animation.update()
             self.image = self.explosion_animation.image
-            if self.explosion_animation.ended == True:
+            self.explosion_animation.set_reset(False)
+            if self.explosion_animation.ended:
                 self.kill()
 
     def enemy_randomizer(self, enemy_level: int):
