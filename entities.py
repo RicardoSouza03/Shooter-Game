@@ -9,9 +9,9 @@ class Player(pygame.sprite.Sprite):
         self.y = screen_size[1]/2
         self.life = 1
         self.skin_path = skin_path
-        self.idle_animation = Animation(f'{skin_path}/Idle_sheet.png', 4, 150, 32, 32, 3, True)
-        self.throw_animation = Animation(f'{skin_path}/Throw_sheet.png', 4, 40, 32, 32, 3, False)
-        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 150, 32, 32, 3, False)
+        self.idle_animation = Animation(f'{skin_path}/Idle_sheet.png', 4, 150, 18, 28, 3, True)
+        self.throw_animation = Animation(f'{skin_path}/Throw_sheet.png', 4, 30, 19, 28, 3, False)
+        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 150, 35, 28, 3, False)
         self.screen = (screen_size[0], screen_size[1])
         self.image = self.idle_animation.image
         self.rect = self.image.get_rect(center = (self.x, self.y))
