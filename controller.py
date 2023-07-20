@@ -40,8 +40,8 @@ class Controller():
                 scale = (self.screen_width, self.screen_heigth)
                 position = (0, 0)
             elif image == "Spaceship.png":
-                scale = (45, 45)
-                position = (self.screen_width/2-25, self.screen_heigth/2+18)
+                scale = (65, 65)
+                position = (self.screen_width/2-32, self.screen_heigth/2+12)
                 reversed_img = True
             else: 
                 scale = (self.screen_width, 324)
