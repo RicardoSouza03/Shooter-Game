@@ -11,7 +11,7 @@ class Player(pygame.sprite.Sprite):
         self.skin_path = skin_path
         self.idle_animation = Animation(f'{skin_path}/Idle_sheet.png', 4, 150, 18, 28, 3, True)
         self.throw_animation = Animation(f'{skin_path}/Throw_sheet.png', 4, 30, 19, 28, 3, False)
-        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 150, 35, 28, 3, False)
+        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 95, 35, 28, 3, False)
         self.screen = (screen_size[0], screen_size[1])
         self.image = self.idle_animation.image
         self.rect = self.image.get_rect(center = (self.x, self.y))
@@ -32,18 +32,22 @@ class Player(pygame.sprite.Sprite):
         angle = get_angle_between((self.x, self.y), mouse_pos)
         return Bullet(self.x, self.y, self.screen, angle)
 
-    def update(self):
+    def flip_player(self):
         mouse_x, _ = pygame.mouse.get_pos()
-        self.animation_setter()
 
         if mouse_x <= self.x: 
             self.image = pygame.transform.flip(self.image, True, False).convert_alpha()
         elif mouse_x > self.x: 
             self.image = pygame.transform.flip(self.image, False, False).convert_alpha()
 
+    def update(self):
+        self.animation_setter()
+        self.flip_player()
+        
         if self.life <= 0:
             self.death_animation.update()
             self.image = self.death_animation.image
+            self.flip_player()
             self.death_animation.set_reset(False)
             if self.death_animation.ended:
                 self.kill()
