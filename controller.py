@@ -15,7 +15,7 @@ class Controller():
         self.screen_heigth = 800
         self.score = 0
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
-        self.player_skin = 'Yeti'
+        self.player_skin = 'Rodolfo'
         self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
 
     def create_enemy(self, enemy_group):
@@ -90,27 +90,52 @@ class Controller():
             self.options = True
         if exit_button.draw(self.screen): self.running = False
 
+    def change_selected_skin(self, dict):
+        for character in dict:
+            if not dict[character]['selected'] and character == self.player_skin:
+                dict[character]['image'] = pygame.transform.scale(dict[character]['image'], (100, 100))
+            else:
+                dict[character]['image'] = pygame.transform.scale(dict[character]['image'], (80, 80))
+                dict[character]['selected'] = False
+
     def display_options_menu(self):
         shop_images_path = 'sprites/shop_images/'
-        yeti_unlocked = int(self.best_score(0)) >= 3600
+        best_score = int(self.best_score(0))
+        characters_shop_dict = {
+            'Rodolfo': {
+                'is_unlocked': True,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Rodolfo_character.png').convert_alpha(), (80, 80)),
+                'image_locked': None,
+                'selected': False,
+                'coordinate_x': 150,
+            },
+            'Yeti': {
+                'is_unlocked': best_score >= 3600,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character_locked.png').convert_alpha(), (80, 80)),
+                'selected': False,
+                'coordinate_x': 260,
+            }
+        }
 
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
         return_arrow_button = Button(40, 40, image)
-        image = pygame.transform.scale(pygame.image.load(f'{shop_images_path}Rodolfo_character.png').convert_alpha(), (80, 80))
-        rodolfo_character_button = Button(150, 200, image)
-        if yeti_unlocked:
-            image = pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character.png').convert_alpha(), (80, 80))
-        else:
-            image = pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character_locked.png').convert_alpha(), (80, 80))
-        yeti_character_button = Button(240, 200, image)
 
         if return_arrow_button.draw(self.screen):
             self.options = False
             self.main_menu = True
-        if rodolfo_character_button.draw(self.screen):
-            self.player_skin = 'Rodolfo'
-        if yeti_character_button.draw(self.screen) and yeti_unlocked:
-            self.player_skin = 'Yeti'
+
+        for key in characters_shop_dict:
+            self.change_selected_skin(characters_shop_dict)
+
+            if characters_shop_dict[key]['is_unlocked']:
+                key_button = Button(characters_shop_dict[key]['coordinate_x'], 200, characters_shop_dict[key]['image'])
+            else:
+                key_button = Button(characters_shop_dict[key]['coordinate_x'], 200, characters_shop_dict[key]['image_locked'])
+
+            if key_button.draw(self.screen) and characters_shop_dict[key]['is_unlocked']:
+                self.player_skin = key
+                
 
     def reset_game(self, groups):
         pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
