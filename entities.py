@@ -17,22 +17,15 @@ skins_dict = {
 }
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, screen_size, skin) -> None:
+    def __init__(self, screen_size, skin_name) -> None:
         super().__init__()
         self.x = screen_size[0]/2
         self.y = screen_size[1]/2
         self.life = 1
         self.animations = {}
-        for key in skins_dict[skin]:
-            self.animations[key] = Animation(
-                skins_dict[skin][key]['sheet'],
-                skins_dict[skin][key]['steps'],
-                skins_dict[skin][key]['speed'],
-                skins_dict[skin][key]['width'],
-                skins_dict[skin][key]['height'],
-                skins_dict[skin][key]['scale'],
-                skins_dict[skin][key]['loop'],
-            )
+        for character_skin in skins_dict[skin_name]:
+            skin = skins_dict[skin_name][character_skin]
+            self.animations[character_skin] = Animation(skin['sheet'],skin['steps'],skin['speed'],skin['width'],skin['height'],skin['scale'],skin['loop'])
         self.idle_animation = self.animations['Idle']
         self.throw_animation = self.animations['Throw']
         self.death_animation = self.animations['Death']
