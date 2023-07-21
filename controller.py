@@ -5,8 +5,8 @@ from utils.button import Button
 class Controller():
     def __init__(self) -> None:
         self.running = True
-        self.paused = False
         self.main_menu = True
+        self.paused = False
         self.options = False
         self.level = 1
         self.enemy_count = 4
@@ -147,7 +147,7 @@ class Controller():
         groups[2].empty()
         self.score = 0
         self.level = 1
-        self.main_menu, self.paused = False, False
+        self.main_menu, self.paused, self.options = False, False, False
         self.enemy_count = 4
 
     def difficult_handler(self):
@@ -221,7 +221,7 @@ class Controller():
 
                 self.display_text(self.score, (self.screen_width-160, 20), 60)
        
-            elif self.paused and not self.main_menu:
+            elif self.paused and not (self.main_menu or self.options):
                 self.display_pause_menu()
             elif self.main_menu:
                 self.display_main_menu([enemy_group, player_group, bullet_group])
