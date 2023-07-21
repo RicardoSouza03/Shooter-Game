@@ -2,16 +2,40 @@ import pygame, math, random
 from utils.angle_between import get_angle_between
 from utils.animation import Animation
 
+
+skins_dict = {
+    'Rodolfo': {
+        'Idle': { 'sheet': 'sprites/characters/blue_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 18, 'height': 28, 'scale': 3, 'loop': True },
+        'Throw': { 'sheet': 'sprites/characters/blue_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 19, 'height': 28, 'scale': 3, 'loop': False },
+        'Death': { 'sheet': 'sprites/characters/blue_character/Death_sheet.png', 'steps': 7, 'speed': 95, 'width': 35, 'height': 28, 'scale': 3, 'loop': False },
+    },
+    'Yeti': {
+        'Idle': { 'sheet': 'sprites/characters/yeti_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 22, 'height': 28, 'scale': 3, 'loop': True },
+        'Throw': { 'sheet': 'sprites/characters/yeti_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 22, 'height': 28, 'scale': 3, 'loop': False },
+        'Death': { 'sheet': 'sprites/characters/yeti_character/Death_sheet.png', 'steps': 7, 'speed': 95, 'width': 35, 'height': 28, 'scale': 3, 'loop': False },
+    },
+}
+
 class Player(pygame.sprite.Sprite):
-    def __init__(self, screen_size, skin_path) -> None:
+    def __init__(self, screen_size, skin) -> None:
         super().__init__()
         self.x = screen_size[0]/2
         self.y = screen_size[1]/2
         self.life = 1
-        self.skin_path = skin_path
-        self.idle_animation = Animation(f'{skin_path}/Idle_sheet.png', 4, 150, 18, 28, 3, True)
-        self.throw_animation = Animation(f'{skin_path}/Throw_sheet.png', 4, 30, 19, 28, 3, False)
-        self.death_animation = Animation(f'{skin_path}/Death_sheet.png', 4, 95, 35, 28, 3, False)
+        self.animations = {}
+        for key in skins_dict[skin]:
+            self.animations[key] = Animation(
+                skins_dict[skin][key]['sheet'],
+                skins_dict[skin][key]['steps'],
+                skins_dict[skin][key]['speed'],
+                skins_dict[skin][key]['width'],
+                skins_dict[skin][key]['height'],
+                skins_dict[skin][key]['scale'],
+                skins_dict[skin][key]['loop'],
+            )
+        self.idle_animation = self.animations['Idle']
+        self.throw_animation = self.animations['Throw']
+        self.death_animation = self.animations['Death']
         self.screen = (screen_size[0], screen_size[1])
         self.image = self.idle_animation.image
         self.rect = self.image.get_rect(center = (self.x, self.y))
@@ -79,9 +103,10 @@ class Enemy(pygame.sprite.Sprite):
                 self.kill()
 
     def enemy_randomizer(self, enemy_level: int):
+        img_folder_path = 'sprites/characters/enemies/'
         random_level = random.randint(1, enemy_level)
         if enemy_level == 1: random_level = 1
-        enemy_by_level = {1: 'sprites/characters/enemie.png', 2: 'sprites/characters/enemie2.png', 3: 'sprites/characters/enemie3.png'}
+        enemy_by_level = {1: f'{img_folder_path}enemie.png', 2: f'{img_folder_path}enemie2.png', 3: f'{img_folder_path}enemie3.png'}
         self.original_image = pygame.image.load(enemy_by_level[random_level]).convert_alpha()
         self.life = random_level
 
