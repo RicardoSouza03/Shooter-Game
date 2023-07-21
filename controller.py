@@ -7,6 +7,7 @@ class Controller():
         self.running = True
         self.paused = False
         self.main_menu = True
+        self.options = False
         self.level = 1
         self.enemy_count = 4
         self.clock = pygame.time.Clock()
@@ -14,8 +15,8 @@ class Controller():
         self.screen_heigth = 800
         self.score = 0
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
-        self.player_skin_path = 'sprites/characters/blue_character'
-        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin_path)
+        self.player_skin = 'Yeti'
+        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
 
     def create_enemy(self, enemy_group):
         enemy = Enemy((self.screen_width, self.screen_heigth), self.level)
@@ -83,15 +84,37 @@ class Controller():
         self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
         if self.score > 0: self.display_text(f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
         if new_game_button.draw(self.screen): self.reset_game(groups)
-        if options_button.draw(self.screen): self.reset_game(groups)
+        if options_button.draw(self.screen): 
+            self.display_options_menu()
+            self.main_menu = False
+            self.options = True
         if exit_button.draw(self.screen): self.running = False
 
     def display_options_menu(self):
-        ...
+        shop_images_path = 'sprites/shop_images/'
+        yeti_unlocked = int(self.best_score(0)) >= 3600
+
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
+        return_arrow_button = Button(40, 40, image)
+        image = pygame.transform.scale(pygame.image.load(f'{shop_images_path}Rodolfo_character.png').convert_alpha(), (80, 80))
+        rodolfo_character_button = Button(150, 200, image)
+        if yeti_unlocked:
+            image = pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character.png').convert_alpha(), (80, 80))
+        else:
+            image = pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character_locked.png').convert_alpha(), (80, 80))
+        yeti_character_button = Button(240, 200, image)
+
+        if return_arrow_button.draw(self.screen):
+            self.options = False
+            self.main_menu = True
+        if rodolfo_character_button.draw(self.screen):
+            self.player_skin = 'Rodolfo'
+        if yeti_character_button.draw(self.screen) and yeti_unlocked:
+            self.player_skin = 'Yeti'
 
     def reset_game(self, groups):
         pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
-        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin_path)
+        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
         groups[0].empty()
         groups[1].add(self.player)
         groups[2].empty()
@@ -138,7 +161,7 @@ class Controller():
 
             self.set_background()
             self.difficult_handler()
-            if not self.paused and not self.main_menu:
+            if not self.paused and not (self.main_menu or self.options):
                 if self.score <= 0: self.score = 0
                 self.pause()
 
@@ -175,6 +198,8 @@ class Controller():
                 self.display_pause_menu()
             elif self.main_menu:
                 self.display_main_menu([enemy_group, player_group, bullet_group])
+            elif self.options:
+                self.display_options_menu()
 
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
 
