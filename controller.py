@@ -128,7 +128,7 @@ class Controller():
         self.display_text('Characters', (150, 140), 50)
 
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
-        return_arrow_button = Button(40, 40, image)
+        return_arrow_button = Button(25, 30, image)
 
         if return_arrow_button.draw(self.screen):
             self.options = False
