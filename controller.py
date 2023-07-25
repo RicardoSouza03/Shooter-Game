@@ -164,6 +164,12 @@ class Controller():
         if self.score >= 2800:
             self.level = 3
             self.enemy_count = 7
+        if self.score >= 3400:
+            self.level = 4
+            self.enemy_count = 8
+        if self.score >= 4250:
+            self.level = 5
+            self.enemy_count = 6
 
     def best_score(self, new_score):
         with open('best_score.txt', mode='r+') as txt:
