@@ -80,7 +80,6 @@ class Enemy(pygame.sprite.Sprite):
         self.enemy_randomizer(enemy_level)
         self.spawn(screen_size)
         self.screen_size = screen_size
-        self.speed = 1
         self.image = pygame.transform.scale(self.original_image, (40,40))
         self.explosion_animation = Animation('sprites/Pop_sheet.png', 4, 10, 40, 40, 1, False)
         self.rect = self.image.get_rect(center = (self.x, self.y))
@@ -104,9 +103,16 @@ class Enemy(pygame.sprite.Sprite):
         img_folder_path = 'sprites/characters/enemies/'
         random_level = random.randint(1, enemy_level)
         if enemy_level == 1: random_level = 1
-        enemy_by_level = {1: f'{img_folder_path}enemie.png', 2: f'{img_folder_path}enemie2.png', 3: f'{img_folder_path}enemie3.png'}
-        self.original_image = pygame.image.load(enemy_by_level[random_level]).convert_alpha()
-        self.life = random_level
+        enemy_by_level = {
+            1: {'path': f'{img_folder_path}enemie.png', 'life': 1, 'speed': 1 },
+            2: {'path': f'{img_folder_path}enemie2.png', 'life': 2, 'speed': 1 },
+            3: {'path': f'{img_folder_path}enemie3.png', 'life': 3, 'speed': 1 },
+            4: {'path': f'{img_folder_path}enemie4.png', 'life': 1, 'speed': 2 },
+            5: {'path': f'{img_folder_path}enemie5.png', 'life': 4, 'speed': 1 },
+        }
+        self.original_image = pygame.image.load(enemy_by_level[random_level]['path']).convert_alpha()
+        self.life = enemy_by_level[random_level]['life']
+        self.speed = enemy_by_level[random_level]['speed']
 
     def spawn(self, screen_size):
         # Sets enemy position at a random position on screen.
