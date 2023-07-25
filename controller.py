@@ -109,12 +109,19 @@ class Controller():
                 'selected': False,
                 'coordinate_x': 150,
             },
-            'Yeti': {
+            'Pink': {
                 'is_unlocked': best_score >= 3600,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Pink_character.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Pink_character_locked.png').convert_alpha(), (80, 80)),
+                'selected': False,
+                'coordinate_x': 260,
+            },
+            'Yeti': {
+                'is_unlocked': best_score >= 4500,
                 'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character.png').convert_alpha(), (80, 80)),
                 'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character_locked.png').convert_alpha(), (80, 80)),
                 'selected': False,
-                'coordinate_x': 260,
+                'coordinate_x': 370,
             }
         }
 

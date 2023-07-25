@@ -9,6 +9,11 @@ skins_dict = {
         'Throw': { 'sheet': 'sprites/characters/blue_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 19, 'height': 28, 'scale': 3, 'loop': False },
         'Death': { 'sheet': 'sprites/characters/blue_character/Death_sheet.png', 'steps': 7, 'speed': 95, 'width': 35, 'height': 28, 'scale': 3, 'loop': False },
     },
+    'Pink': {
+        'Idle': { 'sheet': 'sprites/characters/pink_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 20, 'height': 29, 'scale': 3, 'loop': True },
+        'Throw': { 'sheet': 'sprites/characters/pink_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 20, 'height': 28, 'scale': 3, 'loop': False },
+        'Death': { 'sheet': 'sprites/characters/pink_character/Death_sheet.png', 'steps': 7, 'speed': 95, 'width': 35, 'height': 29, 'scale': 3, 'loop': False },
+    },
     'Yeti': {
         'Idle': { 'sheet': 'sprites/characters/yeti_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 22, 'height': 28, 'scale': 3, 'loop': True },
         'Throw': { 'sheet': 'sprites/characters/yeti_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 22, 'height': 28, 'scale': 3, 'loop': False },
