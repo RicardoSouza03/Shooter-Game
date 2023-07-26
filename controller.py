@@ -92,11 +92,10 @@ class Controller():
 
     def change_selected_skin(self, dict):
         for character in dict:
-            if not dict[character]['selected'] and character == self.player_skin:
+            if character == self.player_skin:
                 dict[character]['image'] = pygame.transform.scale(dict[character]['image'], (100, 100))
             else:
                 dict[character]['image'] = pygame.transform.scale(dict[character]['image'], (80, 80))
-                dict[character]['selected'] = False
 
     def display_options_menu(self):
         shop_images_path = 'sprites/shop_images/'
@@ -106,21 +105,18 @@ class Controller():
                 'is_unlocked': True,
                 'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Rodolfo_character.png').convert_alpha(), (80, 80)),
                 'image_locked': None,
-                'selected': False,
                 'coordinate_x': 150,
             },
             'Pink': {
                 'is_unlocked': best_score >= 3600,
                 'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Pink_character.png').convert_alpha(), (80, 80)),
                 'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Pink_character_locked.png').convert_alpha(), (80, 80)),
-                'selected': False,
                 'coordinate_x': 260,
             },
             'Yeti': {
                 'is_unlocked': best_score >= 4500,
                 'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character.png').convert_alpha(), (80, 80)),
                 'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character_locked.png').convert_alpha(), (80, 80)),
-                'selected': False,
                 'coordinate_x': 370,
             }
         }
@@ -144,7 +140,6 @@ class Controller():
 
             if key_button.draw(self.screen) and characters_shop_dict[key]['is_unlocked']:
                 self.player_skin = key
-                
 
     def reset_game(self, groups):
         pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
