@@ -1,4 +1,4 @@
-import pygame, os
+import pygame, os, ctypes
 from entities import Player, Enemy
 from utils.button import Button
 
@@ -11,16 +11,25 @@ class Controller():
         self.level = 1
         self.enemy_count = 4
         self.clock = pygame.time.Clock()
-        self.screen_width = 600
-        self.screen_heigth = 800
+        self.get_screen_size()
         self.score = 0
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth), pygame.SCALED)
         self.player_skin = 'Rodolfo'
         self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
 
     def create_enemy(self, enemy_group):
         enemy = Enemy((self.screen_width, self.screen_heigth), self.level)
         enemy_group.add(enemy)
+
+    def get_screen_size(self):
+        user32 = ctypes.windll.user32
+        screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        if screensize > (1366, 768):
+            self.screen_width, self.screen_heigth = (600, 800)
+        elif (820, 914) < screensize <= (1366, 768):
+            self.screen_width, self.screen_heigth = (600, screensize[1] - 50)
+        else:
+            self.screen_width, self.screen_heigth = screensize
 
     def change_cursor(self):
         image = pygame.image.load('sprites/cross hair.png').convert_alpha()
