@@ -21,7 +21,7 @@ class Controller():
     def load_game_features(self):
         self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
         
-        shop_characters_path = 'sprites/shop_images/'
+        shop_characters_path = 'sprites/shop_images/characters/'
         best_score = int(self.best_score(0))
         characters_shop_dict = {
             'Rodolfo': {
@@ -47,6 +47,7 @@ class Controller():
             }
         }
         self.skin_section = MenuOptionsSection(characters_shop_dict, self.player_skin, self.screen)
+
 
     def create_enemy(self, enemy_group):
         enemy = Enemy((self.screen_width, self.screen_heigth), self.level)
