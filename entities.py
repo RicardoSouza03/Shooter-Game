@@ -2,45 +2,76 @@ import pygame, math, random
 from utils.angle_between import get_angle_between
 from utils.animation import Animation
 
+
+skins_dict = {
+    'Rodolfo': {
+        'Idle': { 'sheet': 'sprites/characters/blue_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 18, 'height': 28, 'scale': 3, 'loop': True },
+        'Throw': { 'sheet': 'sprites/characters/blue_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 19, 'height': 28, 'scale': 3, 'loop': False },
+        'Death': { 'sheet': 'sprites/characters/blue_character/Death_sheet.png', 'steps': 7, 'speed': 95, 'width': 35, 'height': 28, 'scale': 3, 'loop': False },
+    },
+    'Pink': {
+        'Idle': { 'sheet': 'sprites/characters/pink_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 20, 'height': 29, 'scale': 3, 'loop': True },
+        'Throw': { 'sheet': 'sprites/characters/pink_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 20, 'height': 28, 'scale': 3, 'loop': False },
+        'Death': { 'sheet': 'sprites/characters/pink_character/Death_sheet.png', 'steps': 7, 'speed': 95, 'width': 35, 'height': 29, 'scale': 3, 'loop': False },
+    },
+    'Yeti': {
+        'Idle': { 'sheet': 'sprites/characters/yeti_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 22, 'height': 28, 'scale': 3, 'loop': True },
+        'Throw': { 'sheet': 'sprites/characters/yeti_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 22, 'height': 28, 'scale': 3, 'loop': False },
+        'Death': { 'sheet': 'sprites/characters/yeti_character/Death_sheet.png', 'steps': 7, 'speed': 95, 'width': 35, 'height': 28, 'scale': 3, 'loop': False },
+    },
+}
+
 class Player(pygame.sprite.Sprite):
-    def __init__(self, screen_size) -> None:
+    def __init__(self, screen_size, skin_name) -> None:
         super().__init__()
         self.x = screen_size[0]/2
         self.y = screen_size[1]/2
-        self.is_left = False
         self.life = 1
-        self.death_animation = Animation((60,70), 'sprites/characters/death_0', 8)
+        self.animations = {}
+        for character_skin in skins_dict[skin_name]:
+            skin = skins_dict[skin_name][character_skin]
+            self.animations[character_skin] = Animation(skin['sheet'],skin['steps'],skin['speed'],skin['width'],skin['height'],skin['scale'],skin['loop'])
+        self.idle_animation = self.animations['Idle']
+        self.throw_animation = self.animations['Throw']
+        self.death_animation = self.animations['Death']
         self.screen = (screen_size[0], screen_size[1])
-        self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (60,70))
-        self.image = self.original_image.copy()
+        self.image = self.idle_animation.image
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
-    def throw_animation(self):
-        is_cliked = pygame.mouse.get_pressed()
-        if is_cliked[0] or is_cliked[1] or is_cliked[2]:
-            self.original_image = pygame.image.load('sprites/characters/Player_throw.png').convert_alpha()
-            self.original_image = pygame.transform.scale(self.original_image, (55,70))
-        elif not (is_cliked[0] or is_cliked[1] or is_cliked[2]):
-            self.original_image = pygame.image.load('sprites/characters/Player_idle.png').convert_alpha()
-            self.original_image = pygame.transform.scale(self.original_image, (60,70))
+    def animation_setter(self):
+        is_clicked = pygame.mouse.get_pressed()
+        if is_clicked[0] or is_clicked[1] or is_clicked[2]:
+            self.throw_animation.update()
+            self.image = self.throw_animation.image
+            self.throw_animation.set_ended(False)
+        else:
+            self.throw_animation.set_ended(True)
+            self.idle_animation.update()
+            self.image = self.idle_animation.image
 
     def create_bullet(self):
         mouse_pos = pygame.mouse.get_pos()
         angle = get_angle_between((self.x, self.y), mouse_pos)
         return Bullet(self.x, self.y, self.screen, angle)
 
-    def update(self):
+    def flip_player(self):
         mouse_x, _ = pygame.mouse.get_pos()
-        if mouse_x <= self.x: self.is_left = True
-        elif mouse_x > self.x: self.is_left = False
-        self.image = pygame.transform.flip(self.original_image, self.is_left, False)
-        self.throw_animation()
 
+        if mouse_x <= self.x: 
+            self.image = pygame.transform.flip(self.image, True, False).convert_alpha()
+        elif mouse_x > self.x: 
+            self.image = pygame.transform.flip(self.image, False, False).convert_alpha()
+
+    def update(self):
+        self.animation_setter()
+        self.flip_player()
+        
         if self.life <= 0:
             self.death_animation.update()
             self.image = self.death_animation.image
-            if self.death_animation.ended == True:
+            self.flip_player()
+            self.death_animation.set_reset(False)
+            if self.death_animation.ended:
                 self.kill()
 
 class Enemy(pygame.sprite.Sprite):
@@ -49,9 +80,8 @@ class Enemy(pygame.sprite.Sprite):
         self.enemy_randomizer(enemy_level)
         self.spawn(screen_size)
         self.screen_size = screen_size
-        self.speed = 1
         self.image = pygame.transform.scale(self.original_image, (40,40))
-        self.explosion_animation = Animation((40,40), 'sprites/pop_0', 4)
+        self.explosion_animation = Animation('sprites/Pop_sheet.png', 4, 10, 40, 40, 1, False)
         self.rect = self.image.get_rect(center = (self.x, self.y))
 
     def update(self, player):
@@ -65,15 +95,24 @@ class Enemy(pygame.sprite.Sprite):
         if self.life <= 0:
             self.explosion_animation.update()
             self.image = self.explosion_animation.image
-            if self.explosion_animation.ended == True:
+            self.explosion_animation.set_reset(False)
+            if self.explosion_animation.ended:
                 self.kill()
 
     def enemy_randomizer(self, enemy_level: int):
+        img_folder_path = 'sprites/characters/enemies/'
         random_level = random.randint(1, enemy_level)
         if enemy_level == 1: random_level = 1
-        enemy_by_level = {1: 'sprites/characters/enemie.png', 2: 'sprites/characters/enemie2.png', 3: 'sprites/characters/enemie3.png'}
-        self.original_image = pygame.image.load(enemy_by_level[random_level]).convert_alpha()
-        self.life = random_level
+        enemy_by_level = {
+            1: {'path': f'{img_folder_path}enemie.png', 'life': 1, 'speed': 1 },
+            2: {'path': f'{img_folder_path}enemie2.png', 'life': 2, 'speed': 1 },
+            3: {'path': f'{img_folder_path}enemie3.png', 'life': 3, 'speed': 1 },
+            4: {'path': f'{img_folder_path}enemie4.png', 'life': 1, 'speed': 2 },
+            5: {'path': f'{img_folder_path}enemie5.png', 'life': 4, 'speed': 1 },
+        }
+        self.original_image = pygame.image.load(enemy_by_level[random_level]['path']).convert_alpha()
+        self.life = enemy_by_level[random_level]['life']
+        self.speed = enemy_by_level[random_level]['speed']
 
     def spawn(self, screen_size):
         # Sets enemy position at a random position on screen.

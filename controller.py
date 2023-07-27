@@ -1,24 +1,35 @@
-import pygame, os
+import pygame, os, ctypes
 from entities import Player, Enemy
 from utils.button import Button
 
 class Controller():
     def __init__(self) -> None:
         self.running = True
-        self.paused = False
         self.main_menu = True
+        self.paused = False
+        self.options = False
         self.level = 1
         self.enemy_count = 4
         self.clock = pygame.time.Clock()
-        self.screen_width = 600
-        self.screen_heigth = 800
+        self.get_screen_size()
         self.score = 0
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth))
-        self.player = Player((self.screen_width, self.screen_heigth))
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth), pygame.SCALED)
+        self.player_skin = 'Rodolfo'
+        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
 
     def create_enemy(self, enemy_group):
         enemy = Enemy((self.screen_width, self.screen_heigth), self.level)
         enemy_group.add(enemy)
+
+    def get_screen_size(self):
+        user32 = ctypes.windll.user32
+        screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        if screensize > (1366, 768):
+            self.screen_width, self.screen_heigth = (600, 800)
+        elif (820, 914) < screensize <= (1366, 768):
+            self.screen_width, self.screen_heigth = (600, screensize[1] - 50)
+        else:
+            self.screen_width, self.screen_heigth = screensize
 
     def change_cursor(self):
         image = pygame.image.load('sprites/cross hair.png').convert_alpha()
@@ -39,8 +50,8 @@ class Controller():
                 scale = (self.screen_width, self.screen_heigth)
                 position = (0, 0)
             elif image == "Spaceship.png":
-                scale = (45, 45)
-                position = (self.screen_width/2-25, self.screen_heigth/2+18)
+                scale = (65, 65)
+                position = (self.screen_width/2-32, self.screen_heigth/2+12)
                 reversed_img = True
             else: 
                 scale = (self.screen_width, 324)
@@ -59,37 +70,95 @@ class Controller():
         if key[pygame.K_ESCAPE] and self.paused == False:
             self.paused = True
         
-    def display_pause_menu(self, groups):
-        buttons_list = []
-        for button in os.listdir('sprites/buttons'):
-            if button == 'exit_button.png': 
-                image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/{button}').convert_alpha(), (160, 50))
-                buttons_list.append(Button(self.screen_width/2-100, self.screen_heigth/2+20, image))
+    def display_pause_menu(self):
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/exit_button.png').convert_alpha(), (120, 50))
+        exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+10, image)
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_button.png').convert_alpha(), (200, 50))
+        return_button = Button(self.screen_width/2-100, self.screen_heigth/2-50, image)
+
+        self.display_text('Paused', (self.screen_width/2-100, 100), 60)
+        if return_button.draw(self.screen): self.paused = False
+        if exit_button.draw(self.screen): self.running = False
+
+    def display_main_menu(self, groups):
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/newGame_button.png').convert_alpha(), (200, 50))
+        new_game_button = Button(self.screen_width/2-100, self.screen_heigth/2-60, image)
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/options_button.png').convert_alpha(), (200, 50))
+        options_button = Button(self.screen_width/2-100, self.screen_heigth/2, image)
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/exit_button.png').convert_alpha(), (120, 50))
+        exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+60, image)
+
+        self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
+        best_score = self.best_score(self.score)
+        self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
+        if self.score > 0: self.display_text(f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
+        if new_game_button.draw(self.screen): self.reset_game(groups)
+        if options_button.draw(self.screen): 
+            self.display_options_menu()
+            self.main_menu = False
+            self.options = True
+        if exit_button.draw(self.screen): self.running = False
+
+    def change_selected_skin(self, dict):
+        for character in dict:
+            if character == self.player_skin:
+                dict[character]['image'] = pygame.transform.scale(dict[character]['image'], (100, 100))
             else:
-                image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/{button}').convert_alpha(), (200, 50))
-                buttons_list.append(Button(self.screen_width/2-100, self.screen_heigth/2-50, image))
-        
-        if self.main_menu:
-            self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
-            best_score = self.best_score(self.score)
-            self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
-            if self.score > 0: self.display_text(f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
-            if buttons_list[1].draw(self.screen): self.reset_game(groups)
-            if buttons_list[0].draw(self.screen): self.running = False
-        else:
-            self.display_text('Paused', (self.screen_width/2-100, 100), 60)
-            if buttons_list[2].draw(self.screen): self.paused = False
-            if buttons_list[0].draw(self.screen): self.running = False
+                dict[character]['image'] = pygame.transform.scale(dict[character]['image'], (80, 80))
+
+    def display_options_menu(self):
+        shop_images_path = 'sprites/shop_images/'
+        best_score = int(self.best_score(0))
+        characters_shop_dict = {
+            'Rodolfo': {
+                'is_unlocked': True,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Rodolfo_character.png').convert_alpha(), (80, 80)),
+                'image_locked': None,
+                'coordinate_x': 150,
+            },
+            'Pink': {
+                'is_unlocked': best_score >= 3600,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Pink_character.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Pink_character_locked.png').convert_alpha(), (80, 80)),
+                'coordinate_x': 260,
+            },
+            'Yeti': {
+                'is_unlocked': best_score >= 4500,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_images_path}Yeti_character_locked.png').convert_alpha(), (80, 80)),
+                'coordinate_x': 370,
+            }
+        }
+
+        self.display_text('Characters', (150, 140), 50)
+
+        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
+        return_arrow_button = Button(25, 30, image)
+
+        if return_arrow_button.draw(self.screen):
+            self.options = False
+            self.main_menu = True
+
+        for key in characters_shop_dict:
+            self.change_selected_skin(characters_shop_dict)
+
+            if characters_shop_dict[key]['is_unlocked']:
+                key_button = Button(characters_shop_dict[key]['coordinate_x'], 200, characters_shop_dict[key]['image'])
+            else:
+                key_button = Button(characters_shop_dict[key]['coordinate_x'], 200, characters_shop_dict[key]['image_locked'])
+
+            if key_button.draw(self.screen) and characters_shop_dict[key]['is_unlocked']:
+                self.player_skin = key
 
     def reset_game(self, groups):
         pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
-        self.player = Player((self.screen_width, self.screen_heigth))
+        self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
         groups[0].empty()
         groups[1].add(self.player)
         groups[2].empty()
         self.score = 0
         self.level = 1
-        self.main_menu, self.paused = False, False
+        self.main_menu, self.paused, self.options = False, False, False
         self.enemy_count = 4
 
     def difficult_handler(self):
@@ -99,6 +168,12 @@ class Controller():
         if self.score >= 2800:
             self.level = 3
             self.enemy_count = 7
+        if self.score >= 3400:
+            self.level = 4
+            self.enemy_count = 8
+        if self.score >= 4250:
+            self.level = 5
+            self.enemy_count = 6
 
     def best_score(self, new_score):
         with open('best_score.txt', mode='r+') as txt:
@@ -130,7 +205,7 @@ class Controller():
 
             self.set_background()
             self.difficult_handler()
-            if not self.paused and not self.main_menu:
+            if not self.paused and not (self.main_menu or self.options):
                 if self.score <= 0: self.score = 0
                 self.pause()
 
@@ -163,8 +238,12 @@ class Controller():
 
                 self.display_text(self.score, (self.screen_width-160, 20), 60)
        
-            elif self.paused or self.main_menu:
-                self.display_pause_menu([enemy_group, player_group, bullet_group])
+            elif self.paused and not (self.main_menu or self.options):
+                self.display_pause_menu()
+            elif self.main_menu:
+                self.display_main_menu([enemy_group, player_group, bullet_group])
+            elif self.options:
+                self.display_options_menu()
 
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
 
