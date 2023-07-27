@@ -2,6 +2,7 @@ import pygame, os, ctypes
 from entities import Player, Enemy
 from utils.button import Button
 from utils.Menu_section import MenuOptionsSection
+from utils.load_image import load_image
 
 class Controller():
     def __init__(self) -> None:
@@ -27,22 +28,25 @@ class Controller():
         characters_shop_dict = {
             'Rodolfo': {
                 'is_unlocked': True,
-                'image': pygame.transform.scale(pygame.image.load(f'{shop_characters_path}Rodolfo_character.png').convert_alpha(), (80, 80)),
+                'image_path': f'{shop_characters_path}Rodolfo_character.png',
+                'image': load_image(f'{shop_characters_path}Rodolfo_character.png', True, (80, 80)),
                 'image_locked': None,
                 'coordinate_x': 150,
                 'coordinate_y': 200,
             },
             'Pink': {
                 'is_unlocked': best_score >= 3600,
-                'image': pygame.transform.scale(pygame.image.load(f'{shop_characters_path}Pink_character.png').convert_alpha(), (80, 80)),
-                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_characters_path}Pink_character_locked.png').convert_alpha(), (80, 80)),
+                'image_path': f'{shop_characters_path}Pink_character.png',
+                'image': load_image(f'{shop_characters_path}Pink_character.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_characters_path}Pink_character_locked.png', True, (80, 80)),
                 'coordinate_x': 260,
                 'coordinate_y': 200,
             },
             'Yeti': {
                 'is_unlocked': best_score >= 4500,
-                'image': pygame.transform.scale(pygame.image.load(f'{shop_characters_path}Yeti_character.png').convert_alpha(), (80, 80)),
-                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_characters_path}Yeti_character_locked.png').convert_alpha(), (80, 80)),
+                'image_path': f'{shop_characters_path}Yeti_character.png',
+                'image': load_image(f'{shop_characters_path}Yeti_character.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_characters_path}Yeti_character_locked.png', True, (80, 80)),
                 'coordinate_x': 370,
                 'coordinate_y': 200,
             }
@@ -53,29 +57,33 @@ class Controller():
         spaceship_shop_dict = {
             'Fighter': {
                 'is_unlocked': True,
-                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Fighter.png').convert_alpha(), (80, 80)),
-                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Fighter.png').convert_alpha(), (80, 80)),
+                'image_path': f'{shop_spaceships_path}Fighter.png',
+                'image': load_image(f'{shop_spaceships_path}Fighter.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Fighter.png', True, (80, 80)),
                 'coordinate_x': 150,
                 'coordinate_y': 400,
             },
             'Scout': {
                 'is_unlocked': best_score >= 2780,
-                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Scout.png').convert_alpha(), (80, 80)),
-                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Scout.png').convert_alpha(), (80, 80)),
+                'image_path': f'{shop_spaceships_path}Scout.png',
+                'image': load_image(f'{shop_spaceships_path}Scout.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Scout.png', True, (80, 80)),
                 'coordinate_x': 260,
                 'coordinate_y': 400,
             },
             'Battlecruiser': {
                 'is_unlocked': best_score >= 3500,
-                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Battlecruiser.png').convert_alpha(), (80, 80)),
-                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Battlecruiser.png').convert_alpha(), (80, 80)),
+                'image_path': f'{shop_spaceships_path}Battlecruiser.png',
+                'image': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (80, 80)),
                 'coordinate_x': 370,
                 'coordinate_y': 400,
             },
             'Dreadnought': {
                 'is_unlocked': best_score >= 4230,
-                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Dreadnought.png').convert_alpha(), (80, 80)),
-                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Dreadnought.png').convert_alpha(), (80, 80)),
+                'image_path': f'{shop_spaceships_path}Dreadnought.png',
+                'image': load_image(f'{shop_spaceships_path}Dreadnought.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Dreadnought.png', True, (80, 80)),
                 'coordinate_x': 480,
                 'coordinate_y': 400,
             },

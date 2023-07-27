@@ -1,5 +1,6 @@
 import pygame
 from utils.button import Button
+from utils.load_image import load_image
 
 class MenuOptionsSection():
     def __init__(self, menu_dict, curr_skin, screen):
@@ -10,9 +11,9 @@ class MenuOptionsSection():
     def change_selected_skin(self):
         for character in self.menu_dict:
             if character == self.current_skin:
-                self.menu_dict[character]['image'] = pygame.transform.scale(self.menu_dict[character]['image'], (100, 100))
+                self.menu_dict[character]['image'] = load_image(self.menu_dict[character]['image_path'], True, (100, 100))
             else:
-                self.menu_dict[character]['image'] = pygame.transform.scale(self.menu_dict[character]['image'], (80, 80))
+                self.menu_dict[character]['image'] = load_image(self.menu_dict[character]['image_path'], True, (80, 80))
 
     def create_dict_buttons(self):
         buttons_list = []
