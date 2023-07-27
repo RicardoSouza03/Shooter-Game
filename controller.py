@@ -16,6 +16,7 @@ class Controller():
         self.score = 0
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth), pygame.SCALED)
         self.player_skin = 'Rodolfo'
+        self.spaceship_skin = 'Fighter'
         self.load_game_features()
 
     def load_game_features(self):
@@ -46,7 +47,40 @@ class Controller():
                 'coordinate_y': 200,
             }
         }
-        self.skin_section = MenuOptionsSection(characters_shop_dict, self.player_skin, self.screen)
+        self.player_skin_section = MenuOptionsSection(characters_shop_dict, self.player_skin, self.screen)
+
+        shop_spaceships_path = 'sprites/shop_images/spaceships/'
+        spaceship_shop_dict = {
+            'Fighter': {
+                'is_unlocked': True,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Fighter.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Fighter.png').convert_alpha(), (80, 80)),
+                'coordinate_x': 150,
+                'coordinate_y': 400,
+            },
+            'Scout': {
+                'is_unlocked': best_score >= 2780,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Scout.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Scout.png').convert_alpha(), (80, 80)),
+                'coordinate_x': 260,
+                'coordinate_y': 400,
+            },
+            'Battlecruiser': {
+                'is_unlocked': best_score >= 3500,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Battlecruiser.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Battlecruiser.png').convert_alpha(), (80, 80)),
+                'coordinate_x': 370,
+                'coordinate_y': 400,
+            },
+            'Dreadnought': {
+                'is_unlocked': best_score >= 4230,
+                'image': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Dreadnought.png').convert_alpha(), (80, 80)),
+                'image_locked': pygame.transform.scale(pygame.image.load(f'{shop_spaceships_path}Dreadnought.png').convert_alpha(), (80, 80)),
+                'coordinate_x': 480,
+                'coordinate_y': 400,
+            },
+        }
+        self.spaceship_skin_section = MenuOptionsSection(spaceship_shop_dict, self.spaceship_skin, self.screen)
 
 
     def create_enemy(self, enemy_group):
@@ -76,22 +110,22 @@ class Controller():
 
     def set_background(self):
         imgs_list = os.listdir('sprites/background/')
-        reversed_img = False
+        spaceship = False
         for image in sorted(imgs_list, reverse=True):
             if image == "sky.png": 
                 scale = (self.screen_width, self.screen_heigth)
                 position = (0, 0)
             elif image == "Spaceship.png":
-                scale = (65, 65)
-                position = (self.screen_width/2-32, self.screen_heigth/2+12)
-                reversed_img = True
+                scale = (200, 200)
+                img = pygame.transform.scale(pygame.image.load(f"sprites/shop_images/spaceships/{self.spaceship_skin}.png").convert_alpha(), scale)
+                position = (self.screen_width/2-100, self.screen_heigth/2-60)
+                spaceship = True
             else: 
                 scale = (self.screen_width, 324)
                 position = (0, self.screen_heigth/2+75)
 
-            if reversed_img:
-                img = pygame.transform.scale(pygame.image.load(f"sprites/background/{image}").convert_alpha(), scale)
-                img = pygame.transform.rotate(img, 180)
+            if spaceship:
+                img = pygame.transform.flip(img, False, True)
             else:
                 img = pygame.transform.scale(pygame.image.load(f"sprites/background/{image}").convert_alpha(), scale)
             self.screen.blit(img, position)
@@ -133,6 +167,7 @@ class Controller():
 
     def display_options_menu(self):
         self.display_text('Characters', (150, 140), 50)
+        self.display_text('Spaceships', (150, 340), 50)
 
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
         return_arrow_button = Button(25, 30, image)
@@ -141,8 +176,10 @@ class Controller():
             self.options = False
             self.main_menu = True
 
-        self.skin_section.draw_menu()
-        self.player_skin = self.skin_section.current_skin
+        self.player_skin_section.draw_menu()
+        self.spaceship_skin_section.draw_menu()
+        self.player_skin = self.player_skin_section.current_skin
+        self.spaceship_skin = self.spaceship_skin_section.current_skin
 
     def reset_game(self, groups):
         pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
@@ -237,6 +274,7 @@ class Controller():
             elif self.main_menu:
                 self.display_main_menu([enemy_group, player_group, bullet_group])
             elif self.options:
+                self.screen.fill('black')
                 self.display_options_menu()
 
             self.screen.blit(self.cursor, pygame.mouse.get_pos())
