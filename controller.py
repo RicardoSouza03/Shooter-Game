@@ -1,4 +1,4 @@
-import pygame, os, ctypes
+import pygame, os
 from entities import Player, Enemy
 from utils.button import Button
 from utils.Menu_section import MenuOptionsSection
@@ -14,12 +14,9 @@ class Controller():
         self.level = 1
         self.enemy_count = 4
         self.clock = pygame.time.Clock()
-        self.get_screen_size()
         self.score = 0
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth), pygame.SCALED)
         self.player_skin = 'Rodolfo'
         self.spaceship_skin = 'Fighter'
-        self.load_game_features()
 
     def load_game_features(self):
         self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
@@ -97,17 +94,18 @@ class Controller():
         enemy_group.add(enemy)
 
     def get_screen_size(self):
-        user32 = ctypes.windll.user32
-        screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
-        if screensize is None:
-            self.screen_width, self.screen_heigth = (600, 750)
+        desktop_sizes = pygame.display.get_desktop_sizes()
+        screensize = desktop_sizes[0]
 
-        if screensize > (1366, 768):
+        if screensize > (1100, 1000):
             self.screen_width, self.screen_heigth = (600, 800)
-        elif (820, 914) < screensize <= (1366, 768):
+        elif (820, 914) < screensize <= (1100, 1000):
             self.screen_width, self.screen_heigth = (600, screensize[1] - 50)
         else:
             self.screen_width, self.screen_heigth = screensize
+
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth), pygame.SCALED)
+        print((self.screen_width, self.screen_heigth))
 
     def change_cursor(self):
         self.cursor = load_image('sprites/cross hair.png', True, (40, 40))
@@ -234,6 +232,8 @@ class Controller():
 
     def start(self):
         pygame.init()
+        self.get_screen_size()
+        self.load_game_features()
         pygame.display.set_caption("Shooter game")
         pygame.mouse.set_visible(False)
         self.change_cursor()
