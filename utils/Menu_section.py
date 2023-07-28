@@ -11,9 +11,9 @@ class MenuOptionsSection():
     def change_selected_skin(self):
         for character in self.menu_dict:
             if character == self.current_skin:
-                self.menu_dict[character]['image'] = load_image(self.menu_dict[character]['image_path'], True, (100, 100))
+                self.menu_dict[character]['image'] = load_image(self.menu_dict[character]['image_path'], True, (115, 115))
             else:
-                self.menu_dict[character]['image'] = load_image(self.menu_dict[character]['image_path'], True, (80, 80))
+                self.menu_dict[character]['image'] = load_image(self.menu_dict[character]['image_path'], True, (105, 105))
 
     def create_dict_buttons(self):
         buttons_list = []

@@ -31,7 +31,7 @@ class Controller():
                 'image_path': f'{shop_characters_path}Rodolfo_character.png',
                 'image': load_image(f'{shop_characters_path}Rodolfo_character.png', True, (80, 80)),
                 'image_locked': None,
-                'coordinate_x': 150,
+                'coordinate_x': 80,
                 'coordinate_y': 200,
             },
             'Pink': {
@@ -39,7 +39,7 @@ class Controller():
                 'image_path': f'{shop_characters_path}Pink_character.png',
                 'image': load_image(f'{shop_characters_path}Pink_character.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_characters_path}Pink_character_locked.png', True, (80, 80)),
-                'coordinate_x': 260,
+                'coordinate_x': 205,
                 'coordinate_y': 200,
             },
             'Yeti': {
@@ -47,7 +47,7 @@ class Controller():
                 'image_path': f'{shop_characters_path}Yeti_character.png',
                 'image': load_image(f'{shop_characters_path}Yeti_character.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_characters_path}Yeti_character_locked.png', True, (80, 80)),
-                'coordinate_x': 370,
+                'coordinate_x': 325,
                 'coordinate_y': 200,
             }
         }
@@ -60,7 +60,7 @@ class Controller():
                 'image_path': f'{shop_spaceships_path}Fighter.png',
                 'image': load_image(f'{shop_spaceships_path}Fighter.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_spaceships_path}Fighter.png', True, (80, 80)),
-                'coordinate_x': 150,
+                'coordinate_x': 80,
                 'coordinate_y': 400,
             },
             'Scout': {
@@ -68,15 +68,15 @@ class Controller():
                 'image_path': f'{shop_spaceships_path}Scout.png',
                 'image': load_image(f'{shop_spaceships_path}Scout.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_spaceships_path}Scout.png', True, (80, 80)),
-                'coordinate_x': 260,
+                'coordinate_x': 205,
                 'coordinate_y': 400,
             },
             'Battlecruiser': {
                 'is_unlocked': best_score >= 3500,
                 'image_path': f'{shop_spaceships_path}Battlecruiser.png',
-                'image': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (80, 80)),
+                'image': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (100, 100)),
                 'image_locked': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (80, 80)),
-                'coordinate_x': 370,
+                'coordinate_x': 325,
                 'coordinate_y': 400,
             },
             'Dreadnought': {
@@ -84,7 +84,7 @@ class Controller():
                 'image_path': f'{shop_spaceships_path}Dreadnought.png',
                 'image': load_image(f'{shop_spaceships_path}Dreadnought.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_spaceships_path}Dreadnought.png', True, (80, 80)),
-                'coordinate_x': 480,
+                'coordinate_x': 450,
                 'coordinate_y': 400,
             },
         }
@@ -174,8 +174,8 @@ class Controller():
         if exit_button.draw(self.screen): self.running = False
 
     def display_options_menu(self):
-        self.display_text('Characters', (150, 140), 50)
-        self.display_text('Spaceships', (150, 340), 50)
+        self.display_text('Characters', (120, 140), 50)
+        self.display_text('Spaceships', (120, 340), 50)
 
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
         return_arrow_button = Button(25, 30, image)
