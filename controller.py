@@ -3,7 +3,8 @@ from entities import Player, Enemy
 from utils.button import Button
 from utils.Menu_section import MenuOptionsSection
 from utils.load_image import load_image
-
+from utils.display_text import display_text
+ 
 class Controller():
     def __init__(self) -> None:
         self.running = True
@@ -27,7 +28,7 @@ class Controller():
         best_score = int(self.best_score(0))
         characters_shop_dict = {
             'Rodolfo': {
-                'is_unlocked': True,
+                'price': 0,
                 'image_path': f'{shop_characters_path}Rodolfo_character.png',
                 'image': load_image(f'{shop_characters_path}Rodolfo_character.png', True, (80, 80)),
                 'image_locked': None,
@@ -35,7 +36,7 @@ class Controller():
                 'coordinate_y': 200,
             },
             'Pink': {
-                'is_unlocked': best_score >= 3600,
+                'price': 3600,
                 'image_path': f'{shop_characters_path}Pink_character.png',
                 'image': load_image(f'{shop_characters_path}Pink_character.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_characters_path}Pink_character_locked.png', True, (100, 100)),
@@ -43,7 +44,7 @@ class Controller():
                 'coordinate_y': 200,
             },
             'Yeti': {
-                'is_unlocked': best_score >= 4500,
+                'price': 4500,
                 'image_path': f'{shop_characters_path}Yeti_character.png',
                 'image': load_image(f'{shop_characters_path}Yeti_character.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_characters_path}Yeti_character_locked.png', True, (100, 100)),
@@ -51,12 +52,12 @@ class Controller():
                 'coordinate_y': 200,
             }
         }
-        self.player_skin_section = MenuOptionsSection(characters_shop_dict, self.player_skin, self.screen)
+        self.player_skin_section = MenuOptionsSection(characters_shop_dict, self.player_skin, self.screen, best_score)
 
         shop_spaceships_path = 'sprites/shop_images/spaceships/'
         spaceship_shop_dict = {
             'Fighter': {
-                'is_unlocked': True,
+                'price': 0,
                 'image_path': f'{shop_spaceships_path}Fighter.png',
                 'image': load_image(f'{shop_spaceships_path}Fighter.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_spaceships_path}Fighter_locked.png', True, (100, 100)),
@@ -64,7 +65,7 @@ class Controller():
                 'coordinate_y': 400,
             },
             'Scout': {
-                'is_unlocked': best_score >= 2780,
+                'price': 2780,
                 'image_path': f'{shop_spaceships_path}Scout.png',
                 'image': load_image(f'{shop_spaceships_path}Scout.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_spaceships_path}Scout_locked.png', True, (100, 100)),
@@ -72,7 +73,7 @@ class Controller():
                 'coordinate_y': 400,
             },
             'Battlecruiser': {
-                'is_unlocked': best_score >= 3500,
+                'price': 3500,
                 'image_path': f'{shop_spaceships_path}Battlecruiser.png',
                 'image': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (80, 80)),
                 'image_locked': load_image(f'{shop_spaceships_path}Battlecruiser_locked.png', True, (100, 100)),
@@ -80,15 +81,15 @@ class Controller():
                 'coordinate_y': 400,
             },
             'Dreadnought': {
-                'is_unlocked': best_score >= 4230,
+                'price': 4230,
                 'image_path': f'{shop_spaceships_path}Dreadnought.png',
                 'image': load_image(f'{shop_spaceships_path}Dreadnought.png', True, (80, 80)),
-                'image_locked': load_image(f'{shop_spaceships_path}Dreadnought_locked.png', True, (100, 100)),
+                'image_locked': load_image(f'{shop_spaceships_path}Dreadnought_locked.png', True, (105, 105)),
                 'coordinate_x': 450,
                 'coordinate_y': 400,
             },
         }
-        self.spaceship_skin_section = MenuOptionsSection(spaceship_shop_dict, self.spaceship_skin, self.screen)
+        self.spaceship_skin_section = MenuOptionsSection(spaceship_shop_dict, self.spaceship_skin, self.screen, best_score)
 
 
     def create_enemy(self, enemy_group):
@@ -110,11 +111,6 @@ class Controller():
         self.cursor = pygame.transform.scale(image, (40, 40))
         win_icon = pygame.image.load('icon.ico').convert_alpha()
         pygame.display.set_icon(win_icon)
-
-    def display_text(self, text: str, location: tuple, font_size: int):
-        font = pygame.font.Font('sprites/Planes_ValMore.ttf', font_size)
-        text_surface = font.render(str(text), False, 'White')
-        self.screen.blit(text_surface, location)
 
     def set_background(self):
         imgs_list = os.listdir('sprites/background/')
@@ -150,7 +146,7 @@ class Controller():
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_button.png').convert_alpha(), (200, 50))
         return_button = Button(self.screen_width/2-100, self.screen_heigth/2-50, image)
 
-        self.display_text('Paused', (self.screen_width/2-100, 100), 60)
+        display_text(self.screen, 'Paused', (self.screen_width/2-100, 100), 60)
         if return_button.draw(self.screen): self.paused = False
         if exit_button.draw(self.screen): self.running = False
 
@@ -162,10 +158,10 @@ class Controller():
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/exit_button.png').convert_alpha(), (120, 50))
         exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+60, image)
 
-        self.display_text('Shooter Game', (self.screen_width/2-140, 100), 40)
+        display_text(self.screen, 'Shooter Game', (self.screen_width/2-140, 100), 40)
         best_score = self.best_score(self.score)
-        self.display_text(f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
-        if self.score > 0: self.display_text(f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
+        display_text(self.screen, f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
+        if self.score > 0: display_text(self.screen, f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
         if new_game_button.draw(self.screen): self.reset_game(groups)
         if options_button.draw(self.screen): 
             self.display_options_menu()
@@ -174,8 +170,8 @@ class Controller():
         if exit_button.draw(self.screen): self.running = False
 
     def display_options_menu(self):
-        self.display_text('Characters', (80, 140), 50)
-        self.display_text('Spaceships', (80, 340), 50)
+        display_text(self.screen, 'Characters', (80, 140), 50)
+        display_text(self.screen, 'Spaceships', (80, 340), 50)
 
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
         return_arrow_button = Button(25, 30, image)
@@ -275,7 +271,7 @@ class Controller():
                     if bullet.update():
                         self.score -= 20
 
-                self.display_text(self.score, (self.screen_width-160, 20), 60)
+                display_text(self.screen, self.score, (self.screen_width-160, 20), 60)
        
             elif self.paused and not (self.main_menu or self.options):
                 self.display_pause_menu()
