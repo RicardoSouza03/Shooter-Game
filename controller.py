@@ -99,6 +99,9 @@ class Controller():
     def get_screen_size(self):
         user32 = ctypes.windll.user32
         screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+        if screensize is None:
+            self.screen_width, self.screen_heigth = (600, 750)
+
         if screensize > (1366, 768):
             self.screen_width, self.screen_heigth = (600, 800)
         elif (820, 914) < screensize <= (1366, 768):
