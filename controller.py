@@ -38,7 +38,7 @@ class Controller():
                 'is_unlocked': best_score >= 3600,
                 'image_path': f'{shop_characters_path}Pink_character.png',
                 'image': load_image(f'{shop_characters_path}Pink_character.png', True, (80, 80)),
-                'image_locked': load_image(f'{shop_characters_path}Pink_character_locked.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_characters_path}Pink_character_locked.png', True, (100, 100)),
                 'coordinate_x': 205,
                 'coordinate_y': 200,
             },
@@ -46,7 +46,7 @@ class Controller():
                 'is_unlocked': best_score >= 4500,
                 'image_path': f'{shop_characters_path}Yeti_character.png',
                 'image': load_image(f'{shop_characters_path}Yeti_character.png', True, (80, 80)),
-                'image_locked': load_image(f'{shop_characters_path}Yeti_character_locked.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_characters_path}Yeti_character_locked.png', True, (100, 100)),
                 'coordinate_x': 325,
                 'coordinate_y': 200,
             }
@@ -59,7 +59,7 @@ class Controller():
                 'is_unlocked': True,
                 'image_path': f'{shop_spaceships_path}Fighter.png',
                 'image': load_image(f'{shop_spaceships_path}Fighter.png', True, (80, 80)),
-                'image_locked': load_image(f'{shop_spaceships_path}Fighter.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Fighter_locked.png', True, (100, 100)),
                 'coordinate_x': 80,
                 'coordinate_y': 400,
             },
@@ -67,15 +67,15 @@ class Controller():
                 'is_unlocked': best_score >= 2780,
                 'image_path': f'{shop_spaceships_path}Scout.png',
                 'image': load_image(f'{shop_spaceships_path}Scout.png', True, (80, 80)),
-                'image_locked': load_image(f'{shop_spaceships_path}Scout.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Scout_locked.png', True, (100, 100)),
                 'coordinate_x': 205,
                 'coordinate_y': 400,
             },
             'Battlecruiser': {
                 'is_unlocked': best_score >= 3500,
                 'image_path': f'{shop_spaceships_path}Battlecruiser.png',
-                'image': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (100, 100)),
-                'image_locked': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (80, 80)),
+                'image': load_image(f'{shop_spaceships_path}Battlecruiser.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Battlecruiser_locked.png', True, (100, 100)),
                 'coordinate_x': 325,
                 'coordinate_y': 400,
             },
@@ -83,7 +83,7 @@ class Controller():
                 'is_unlocked': best_score >= 4230,
                 'image_path': f'{shop_spaceships_path}Dreadnought.png',
                 'image': load_image(f'{shop_spaceships_path}Dreadnought.png', True, (80, 80)),
-                'image_locked': load_image(f'{shop_spaceships_path}Dreadnought.png', True, (80, 80)),
+                'image_locked': load_image(f'{shop_spaceships_path}Dreadnought_locked.png', True, (100, 100)),
                 'coordinate_x': 450,
                 'coordinate_y': 400,
             },
@@ -174,8 +174,8 @@ class Controller():
         if exit_button.draw(self.screen): self.running = False
 
     def display_options_menu(self):
-        self.display_text('Characters', (120, 140), 50)
-        self.display_text('Spaceships', (120, 340), 50)
+        self.display_text('Characters', (80, 140), 50)
+        self.display_text('Spaceships', (80, 340), 50)
 
         image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
         return_arrow_button = Button(25, 30, image)
