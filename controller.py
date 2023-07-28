@@ -88,7 +88,6 @@ class Controller():
         }
         self.spaceship_skin_section = MenuOptionsSection(spaceship_shop_dict, self.spaceship_skin, self.screen, best_score)
 
-
     def create_enemy(self, enemy_group):
         enemy = Enemy((self.screen_width, self.screen_heigth), self.level)
         enemy_group.add(enemy)
@@ -105,7 +104,6 @@ class Controller():
             self.screen_width, self.screen_heigth = screensize
 
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_heigth), pygame.SCALED)
-        print((self.screen_width, self.screen_heigth))
 
     def change_cursor(self):
         self.cursor = load_image('sprites/cross hair.png', True, (40, 40))
@@ -166,7 +164,7 @@ class Controller():
         image = load_image(f'{images_path}exit_button.png', True, (120, 50))
         exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+60, image)
 
-        best_score = self.best_score(self.score)
+        best_score = self.best_score(0)
         display_text(self.screen, 'Shooter Game', (self.screen_width/2-140, 100), 40)
         display_text(self.screen, f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
 
@@ -263,6 +261,8 @@ class Controller():
                     self.clock.tick(20)
                     self.player.life -= 1
                 if len(player_group.sprites()) <= 0:
+                    self.best_score(self.score)
+                    self.load_game_features()
                     self.main_menu = True
                     self.paused = True
                 
