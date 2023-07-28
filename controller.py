@@ -107,9 +107,9 @@ class Controller():
             self.screen_width, self.screen_heigth = screensize
 
     def change_cursor(self):
-        image = pygame.image.load('sprites/cross hair.png').convert_alpha()
-        self.cursor = pygame.transform.scale(image, (40, 40))
-        win_icon = pygame.image.load('icon.ico').convert_alpha()
+        self.cursor = load_image('sprites/cross hair.png', True, (40, 40))
+        win_icon = load_image('icon.ico', False)
+
         pygame.display.set_icon(win_icon)
 
     def set_background(self):
@@ -121,7 +121,7 @@ class Controller():
                 position = (0, 0)
             elif image == "Spaceship.png":
                 scale = (200, 200)
-                img = pygame.transform.scale(pygame.image.load(f"sprites/shop_images/spaceships/{self.spaceship_skin}.png").convert_alpha(), scale)
+                img = load_image(f'sprites/shop_images/spaceships/{self.spaceship_skin}.png', True, scale)
                 position = (self.screen_width/2-100, self.screen_heigth/2-60)
                 spaceship = True
             else: 
@@ -131,7 +131,8 @@ class Controller():
             if spaceship:
                 img = pygame.transform.flip(img, False, True)
             else:
-                img = pygame.transform.scale(pygame.image.load(f"sprites/background/{image}").convert_alpha(), scale)
+                img = load_image(f'sprites/background/{image}', True, scale)
+
             self.screen.blit(img, position)
 
     def pause(self):
@@ -141,26 +142,33 @@ class Controller():
             self.paused = True
         
     def display_pause_menu(self):
-        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/exit_button.png').convert_alpha(), (120, 50))
+        image = load_image('sprites/buttons/exit_button.png', True, (120, 50))
         exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+10, image)
-        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_button.png').convert_alpha(), (200, 50))
+
+        image = load_image('sprites/buttons/return_button.png', True, (200, 50))
         return_button = Button(self.screen_width/2-100, self.screen_heigth/2-50, image)
 
         display_text(self.screen, 'Paused', (self.screen_width/2-100, 100), 60)
+
         if return_button.draw(self.screen): self.paused = False
         if exit_button.draw(self.screen): self.running = False
 
     def display_main_menu(self, groups):
-        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/newGame_button.png').convert_alpha(), (200, 50))
+        images_path = 'sprites/buttons/'
+
+        image = load_image(f'{images_path}newGame_button.png', True, (200, 50))
         new_game_button = Button(self.screen_width/2-100, self.screen_heigth/2-60, image)
-        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/options_button.png').convert_alpha(), (200, 50))
+
+        image = load_image(f'{images_path}options_button.png', True, (200, 50))
         options_button = Button(self.screen_width/2-100, self.screen_heigth/2, image)
-        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/exit_button.png').convert_alpha(), (120, 50))
+
+        image = load_image(f'{images_path}exit_button.png', True, (120, 50))
         exit_button = Button(self.screen_width/2-100, self.screen_heigth/2+60, image)
 
-        display_text(self.screen, 'Shooter Game', (self.screen_width/2-140, 100), 40)
         best_score = self.best_score(self.score)
+        display_text(self.screen, 'Shooter Game', (self.screen_width/2-140, 100), 40)
         display_text(self.screen, f'Best score: {best_score}', (self.screen_width/2-140, 160), 40)
+
         if self.score > 0: display_text(self.screen, f'Run score: {self.score}', (self.screen_width/2-140, 200), 40)
         if new_game_button.draw(self.screen): self.reset_game(groups)
         if options_button.draw(self.screen): 
@@ -173,7 +181,7 @@ class Controller():
         display_text(self.screen, 'Characters', (80, 140), 50)
         display_text(self.screen, 'Spaceships', (80, 340), 50)
 
-        image = pygame.transform.scale(pygame.image.load(f'sprites/buttons/return_arrow.png').convert_alpha(), (40, 40))
+        image = load_image('sprites/buttons/return_arrow.png', True, (40, 40))
         return_arrow_button = Button(25, 30, image)
 
         if return_arrow_button.draw(self.screen):
