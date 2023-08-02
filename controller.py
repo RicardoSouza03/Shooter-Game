@@ -119,9 +119,9 @@ class Controller():
                 scale = (self.screen_width, self.screen_heigth)
                 position = (0, 0)
             elif image == "Spaceship.png":
-                scale = (200, 200)
-                img = load_image(f'sprites/shop_images/spaceships/{self.spaceship_skin}.png', True, scale)
-                position = (self.screen_width/2-100, self.screen_heigth/2-60)
+                scale = (150, 150)
+                img = load_image(f'sprites/spaceships/{self.spaceship_skin}.png', True, scale)
+                position = (self.screen_width/2-80, self.screen_heigth/2-40)
                 spaceship = True
             else: 
                 scale = (self.screen_width, 324)
