@@ -1,5 +1,5 @@
 import pygame, os
-from entities import Player, Enemy
+from entities import Player, Enemy, Spaceship
 from utils.button import Button
 from utils.Menu_section import MenuOptionsSection
 from utils.load_image import load_image
@@ -20,6 +20,7 @@ class Controller():
 
     def load_game_features(self):
         self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
+        self.spaceship = Spaceship((self.screen_width, self.screen_heigth), self.spaceship_skin)
         
         shop_characters_path = 'sprites/shop_images/characters/'
         best_score = int(self.best_score(0))
@@ -113,25 +114,15 @@ class Controller():
 
     def set_background(self):
         imgs_list = os.listdir('sprites/background/')
-        spaceship = False
         for image in sorted(imgs_list, reverse=True):
             if image == "sky.png": 
                 scale = (self.screen_width, self.screen_heigth)
                 position = (0, 0)
-            elif image == "Spaceship.png":
-                scale = (150, 150)
-                img = load_image(f'sprites/spaceships/{self.spaceship_skin}.png', True, scale)
-                position = (self.screen_width/2-80, self.screen_heigth/2-40)
-                spaceship = True
             else: 
                 scale = (self.screen_width, 324)
                 position = (0, self.screen_heigth/2+75)
 
-            if spaceship:
-                img = pygame.transform.flip(img, False, True)
-            else:
-                img = load_image(f'sprites/background/{image}', True, scale)
-
+            img = load_image(f'sprites/background/{image}', True, scale)
             self.screen.blit(img, position)
 
     def pause(self):
@@ -195,9 +186,11 @@ class Controller():
     def reset_game(self, groups):
         pygame.event.set_allowed(pygame.MOUSEBUTTONDOWN)
         self.player = Player((self.screen_width, self.screen_heigth), self.player_skin)
+        self.spaceship = Spaceship((self.screen_width, self.screen_heigth), self.spaceship_skin)
         groups[0].empty()
         groups[1].add(self.player)
         groups[2].empty()
+        groups[3].add(self.spaceship)
         self.score = 0
         self.level = 1
         self.main_menu, self.paused, self.options = False, False, False
@@ -239,6 +232,7 @@ class Controller():
         player_group = pygame.sprite.Group()
         bullet_group = pygame.sprite.Group()
         enemy_group = pygame.sprite.Group()
+        spaceship_group = pygame.sprite.Group()
 
         while self.running:
             for event in pygame.event.get():
@@ -260,6 +254,7 @@ class Controller():
                     pygame.event.set_blocked(pygame.MOUSEBUTTONDOWN)
                     self.clock.tick(20)
                     self.player.life -= 1
+                    self.spaceship.life -= 1
                 if len(player_group.sprites()) <= 0:
                     self.best_score(self.score)
                     self.load_game_features()
@@ -272,11 +267,13 @@ class Controller():
                     enemy_hit.life -= 1
                     self.score += 10
 
+                spaceship_group.draw(self.screen)
                 bullet_group.draw(self.screen)
                 player_group.draw(self.screen)
                 enemy_group.draw(self.screen)
                 enemy_group.update(self.player)
                 player_group.update()
+                spaceship_group.update()
 
                 for bullet in bullet_group.sprites():
                     if bullet.update():
@@ -287,7 +284,7 @@ class Controller():
             elif self.paused and not (self.main_menu or self.options):
                 self.display_pause_menu()
             elif self.main_menu:
-                self.display_main_menu([enemy_group, player_group, bullet_group])
+                self.display_main_menu([enemy_group, player_group, bullet_group, spaceship_group])
             elif self.options:
                 self.screen.fill('black')
                 self.display_options_menu()
