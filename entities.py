@@ -1,9 +1,9 @@
 import pygame, math, random
 from utils.angle_between import get_angle_between
 from utils.animation import Animation
+from utils.load_image import load_image
 
-
-skins_dict = {
+player_skins_dict = {
     'Rodolfo': {
         'Idle': { 'sheet': 'sprites/characters/blue_character/Idle_sheet.png', 'steps': 4, 'speed': 150, 'width': 18, 'height': 28, 'scale': 3, 'loop': True },
         'Throw': { 'sheet': 'sprites/characters/blue_character/Throw_sheet.png', 'steps': 4, 'speed': 30, 'width': 19, 'height': 28, 'scale': 3, 'loop': False },
@@ -28,9 +28,9 @@ class Player(pygame.sprite.Sprite):
         self.y = screen_size[1]/2
         self.life = 1
         self.animations = {}
-        for character_skin in skins_dict[skin_name]:
-            skin = skins_dict[skin_name][character_skin]
-            self.animations[character_skin] = Animation(skin['sheet'],skin['steps'],skin['speed'],skin['width'],skin['height'],skin['scale'],skin['loop'])
+        for character_action in player_skins_dict[skin_name]:
+            act = player_skins_dict[skin_name][character_action]
+            self.animations[character_action] = Animation(act['sheet'],act['steps'],act['speed'],act['width'],act['height'],act['scale'],act['loop'])
         self.idle_animation = self.animations['Idle']
         self.throw_animation = self.animations['Throw']
         self.death_animation = self.animations['Death']
@@ -73,6 +73,52 @@ class Player(pygame.sprite.Sprite):
             self.death_animation.set_reset(False)
             if self.death_animation.ended:
                 self.kill()
+
+spaceship_skins_dict = {
+    "Battlecruiser": {
+        "dimension": (216, 270),
+        "explosion": { 'sheet': 'sprites/spaceships/battlecruiser/explosion_sheet.png', 'speed': 95, 'steps':13, 'width': 72, 'height': 90, 'scale': 3, 'loop': False }
+    },
+    "Dreadnought": {
+        "dimension": (216, 300),
+        "explosion": { 'sheet': 'sprites/spaceships/dreadnought/explosion_sheet.png', 'speed': 95, 'steps':13, 'width': 72, 'height': 100, 'scale': 3, 'loop': False }
+    },
+    "Fighter": {
+        "dimension": (174, 126),
+        "explosion": { 'sheet': 'sprites/spaceships/fighter/explosion_sheet.png', 'speed': 95, 'steps':9, 'width': 58, 'height': 42, 'scale': 3, 'loop': False }
+    },
+    "Scout": {
+        "dimension": (150, 120),
+        "explosion": { 'sheet': 'sprites/spaceships/scout/explosion_sheet.png', 'speed': 95, 'steps':10, 'width': 50, 'height': 40, 'scale': 3, 'loop': False }
+    },
+}
+
+
+class Spaceship(pygame.sprite.Sprite):
+    def __init__(self, screen_size: tuple, skin_name) -> None:
+        super().__init__()
+        self.x = (screen_size[0]/2)
+        self.y = (screen_size[1]/2+40)
+        self.life = 1
+        self.animations = {}
+        for ship_action in spaceship_skins_dict[skin_name]:
+            if ship_action == 'dimension':
+                ...
+            else:
+                act = spaceship_skins_dict[skin_name][ship_action]
+                self.animations[ship_action] = Animation(act['sheet'],act['steps'],act['speed'],act['width'],act['height'],act['scale'],act['loop'])
+        self.explosion_animation = self.animations['explosion']
+        self.image = pygame.transform.flip(load_image(f'sprites/spaceships/{skin_name}/{skin_name}.png', True, spaceship_skins_dict[skin_name]['dimension']), False, True)
+        self.rect = self.image.get_rect(center = (self.x, self.y))
+
+    def update(self) -> None:
+        if self.life <= 0:
+            self.explosion_animation.update()
+            self.image = pygame.transform.flip(self.explosion_animation.image, False, True).convert_alpha()
+            self.explosion_animation.set_reset(False)
+            if self.explosion_animation.ended:
+                self.kill()
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, screen_size, enemy_level) -> None:
