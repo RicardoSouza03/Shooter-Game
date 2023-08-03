@@ -255,7 +255,7 @@ class Controller():
                     self.clock.tick(20)
                     self.player.life -= 1
                     self.spaceship.life -= 1
-                if len(player_group.sprites()) <= 0:
+                if len(spaceship_group.sprites()) <= 0:
                     self.best_score(self.score)
                     self.load_game_features()
                     self.main_menu = True

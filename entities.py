@@ -77,11 +77,11 @@ class Player(pygame.sprite.Sprite):
 spaceship_skins_dict = {
     "Battlecruiser": {
         "dimension": (216, 270),
-        "explosion": { 'sheet': 'sprites/spaceships/battlecruiser/explosion_sheet.png', 'speed': 95, 'steps':13, 'width': 72, 'height': 90, 'scale': 3, 'loop': False }
+        "explosion": { 'sheet': 'sprites/spaceships/battlecruiser/explosion_sheet.png', 'speed': 45, 'steps':13, 'width': 72, 'height': 90, 'scale': 3, 'loop': False }
     },
     "Dreadnought": {
         "dimension": (216, 300),
-        "explosion": { 'sheet': 'sprites/spaceships/dreadnought/explosion_sheet.png', 'speed': 95, 'steps':13, 'width': 72, 'height': 100, 'scale': 3, 'loop': False }
+        "explosion": { 'sheet': 'sprites/spaceships/dreadnought/explosion_sheet.png', 'speed': 85, 'steps':13, 'width': 72, 'height': 100, 'scale': 3, 'loop': False }
     },
     "Fighter": {
         "dimension": (174, 126),
